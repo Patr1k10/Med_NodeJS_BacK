@@ -1,16 +1,21 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { config } from 'dotenv';
-config();
+import * as dotenv from 'dotenv';
+import {ConfigService} from "@nestjs/config";
+dotenv.config();
 
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+
+  // Get the port number from the configuration
+  const PORT = configService.get<number>('port');
   app.enableCors({
-    origin: process.env.FRONTEND_ORIGIN || 'http://localhost:3000',
-    methods: process.env.CRORS_METHODS,
+    origin: configService.get('crosConfig.origin'),
+    methods:configService.get('crosConfig.methods'),
     credentials: true,
   });
-  await app.listen( process.env.PORT || 3000);
+  await app.listen(PORT);
 }
 bootstrap();
