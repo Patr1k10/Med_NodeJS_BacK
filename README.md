@@ -58,16 +58,19 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## Support
+## Docker
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+1. Build Docker Image:
+   Build a Docker image of your application using the following command:
+```bash
+docker buildx build -t your-app-name .
+```
+2. Run Docker Container:
+   Run a Docker container using the built image with the following command:
+```bash
+docker run -d -p 3000:3000 your-app-name
+ ```
+Replace your-app-name with the actual name of your Docker image.
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+3. Access the Application:
+   The application will be accessible at http://localhost:3000.
