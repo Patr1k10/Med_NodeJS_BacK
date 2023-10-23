@@ -3,7 +3,7 @@ import { Controller, Get } from '@nestjs/common';
 @Controller()
 export class HealthController {
   @Get()
-  healthCheck() {
+  healthCheck():IHealthCheck {
     return {
       status_code: 200,
       detail: 'ok',
