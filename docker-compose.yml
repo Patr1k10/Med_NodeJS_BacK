@@ -1,0 +1,48 @@
+version: '3'
+
+
+services:
+  db:
+    image: postgres:14.3
+    restart: always
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    networks:
+      - dev-networks
+    container_name: ${DB_NAME}
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app/
+      - /app/node_modules
+    container_name: nest-app
+
+    depends_on:
+      - db
+    networks:
+      - dev-networks
+    environment:
+      - API_PORT=${API_PORT}
+      - API_HOST=${API_HOST}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_PORT=${DB_PORT}
+      - DB_HOST=postgres
+
+
+
+
+volumes:
+  postgres-db:
+    external: false
+networks:
+  dev-networks:
