@@ -58,3 +58,4 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+1. Copy the .env.sample file and fill in .env
