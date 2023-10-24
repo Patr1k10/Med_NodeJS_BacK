@@ -74,3 +74,33 @@ Replace your-app-name with the actual name of your Docker image.
 
 3. Access the Application:
    The application will be accessible at http://localhost:3000.
+4. Create docker-compose.yml:
+   Define services, ports, and dependencies in this file.
+```yaml
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: your_postgres_user
+      POSTGRES_PASSWORD: your_postgres_password
+      POSTGRES_DB: your_postgres_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
+```
+4. Start Application Run in the directory with docker-compose.yml.
+```bash 
+docker-compose up
+```
+5. Use a `.env.sample` file with sample configuration values for your resources (such as database credentials). Developers can copy this file to .env and customize the values according to their 
