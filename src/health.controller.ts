@@ -1,4 +1,4 @@
-import {Controller, Get, HttpStatus, Logger} from '@nestjs/common';
+import { Controller, Get, HttpStatus } from '@nestjs/common';
 import {IHealthCheck} from "./interface/health..heckResponse.interface";
 
 @Controller()
