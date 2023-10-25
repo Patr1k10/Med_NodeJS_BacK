@@ -1,21 +1,6 @@
-version: '3'
-
+version: '3.9'
 
 services:
-  db:
-    image: postgres:14.3
-    restart: always
-    ports:
-      - ${DB_PORT}:${DB_PORT}
-    networks:
-      - dev-networks
-    container_name: ${DB_NAME}
-    volumes:
-      - postgres-db:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=${DB_USERNAME}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
   app:
     build:
       context: .
@@ -24,25 +9,27 @@ services:
       - .:/app/
       - /app/node_modules
     container_name: nest-app
-
+    ports:
+      - 3000:3000
+    environment:
+      - DB_TYPE=postgres
+      - PG_HOST=db
+      - PG_USER=postgres
+      - PG_PASSWORD=postgres
+      - PG_DB=postgres
+      - PG_PORT=5432
     depends_on:
       - db
-    networks:
-      - dev-networks
+  db:
+    container_name: db
+    image: postgres:12
+    ports:
+      - 5432:5432
     environment:
-      - API_PORT=${API_PORT}
-      - API_HOST=${API_HOST}
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
-      - DB_PORT=${DB_PORT}
-      - DB_HOST=db
-
-
-
-
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 volumes:
-  postgres-db:
-    external: false
-networks:
-  dev-networks:
+  pgdata: {}
