@@ -58,4 +58,21 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-1. Copy the .env.sample file and fill in .env
+Copy the .env.sample file and fill in .env
+
+## Docker
+
+1. Build Docker Image:
+   Build a Docker image of your application using the following command:
+```bash
+docker buildx build -t your-app-name .
+```
+2. Run Docker Container:
+   Run a Docker container using the built image with the following command:
+```bash
+docker run -d -p 3000:3000 your-app-name
+ ```
+Replace your-app-name with the actual name of your Docker image.
+
+3. Access the Application:
+   The application will be accessible at http://localhost:3000.
