@@ -1,18 +1,13 @@
 import {Body, Controller, Delete, Get, Param, Patch, Post, Query} from '@nestjs/common';
-import {PaginationService} from "../common/pagination.service";
 import {PaginatedData} from "../types/interface/paginated.interface";
 import {User} from "../entities/user.entity";
-import {Repository} from "typeorm";
 import {UsersService} from "./users.service";
 import {UsersCreateDto} from "./dto/users.create.dto";
-import {InjectRepository} from "@nestjs/typeorm";
 import {UsersUpdateDto} from "./dto/users.update.dto";
 
 @Controller('users')
 export class UsersController {
-  constructor(@InjectRepository(User)
-              private readonly userRepository: Repository<User>,
-              private readonly usersService: UsersService
+  constructor(private readonly usersService: UsersService
   ) {}
 
   @Post()
