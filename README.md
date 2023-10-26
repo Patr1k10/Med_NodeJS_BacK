@@ -58,16 +58,29 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## Support
+Copy the .env.sample file and fill in .env
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Docker
 
-## Stay in touch
+1. Build Docker Image:
+   Build a Docker image of your application using the following command:
+```bash
+docker buildx build -t your-app-name .
+```
+2. Run Docker Container:
+   Run a Docker container using the built image with the following command:
+```bash
+docker run -d -p 3000:3000 your-app-name
+ ```
+Replace your-app-name with the actual name of your Docker image.
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+3. Access the Application:
+   The application will be accessible at http://localhost:3000.
+4. Create docker-compose.yml:
+   Define services, ports, and dependencies in this file.
 
-## License
-
-Nest is [MIT licensed](LICENSE).
+4. Start Application Run in the directory with docker-compose.yml.
+```bash 
+docker-compose up
+```
+5. Use a `.env.sample` file with sample configuration values for your resources (such as database credentials). Developers can copy this file to .env and customize the values according to their 
