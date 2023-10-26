@@ -10,14 +10,13 @@ import {UsersUpdateDto} from "./dto/users.update.dto";
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly paginationService: PaginationService,
-              @InjectRepository(User)
+  constructor(@InjectRepository(User)
               private readonly userRepository: Repository<User>,
               private readonly usersService: UsersService
   ) {}
 
   @Post()
-  async signUp(@Body() userDto: UsersCreateDto): Promise<UsersCreateDto> {
+  async createUser(@Body() userDto: UsersCreateDto): Promise<UsersCreateDto> {
     return this.usersService.createUser(userDto);
   }
 
@@ -44,12 +43,6 @@ export class UsersController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
   ): Promise<PaginatedData<User>> {
-    const queryBuilder = this.userRepository.createQueryBuilder('User');
-    return this.paginationService.paginate<User>(
-      this.userRepository,
-      queryBuilder,
-      +page,
-      +limit,
-    );
+    return this.usersService.findAll(+page, +limit);
   }
 }

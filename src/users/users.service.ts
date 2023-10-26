@@ -5,12 +5,15 @@ import {User} from "../entities/user.entity";
 import {Repository} from "typeorm";
 import {UsersCreateDto} from "./dto/users.create.dto";
 import {UsersUpdateDto} from "./dto/users.update.dto";
+import {PaginatedData} from "../types/interface/paginated.interface";
+import {PaginationService} from "../common/pagination.service";
 
 export class UsersService {
   private readonly logger: Logger = new Logger(UsersService.name)
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly paginationService: PaginationService,
   ) {
   }
 
@@ -36,17 +39,6 @@ export class UsersService {
       this.logger.warn(`User not found with ID: ${id}`);
       throw new NotFoundException('User not found');
     }
-    if (updateUserDto.username) {
-      const existingUser = await this.userRepository.findOne({ where: { username: updateUserDto.username } });
-      if (existingUser && existingUser.id !== id) {
-        this.logger.warn(`Username already exists: ${updateUserDto.username}`);
-        throw new ConflictException('Username already exists');
-      }
-    }
-    if (updateUserDto.password) {
-      updateUserDto.password = await this.hashPassword(updateUserDto.password);
-    }
-    this.logger.log(`Successfully updated user with ID: ${id}`);
     return this.userRepository.save({ ...user, ...updateUserDto });
   }
 
@@ -60,14 +52,21 @@ export class UsersService {
     this.logger.log(`Successfully soft-deleted user with ID: ${id}`);
   }
   async getUserById(id: number): Promise<User> {
-    const user = await this.userRepository.createQueryBuilder('user').where({ id }).getOne();
+    const user = await this.userRepository.findOne({ where: { id } })
     if (!user) {
       throw new Error('User is not found');
     }
-    if (!user.id || typeof user.id !== 'number' || Number.isNaN(user.id)) {
-      throw new BadRequestException('Invalid user ID');
-    }
     return user;
+  }
+
+  async findAll(page = 1, limit = 10): Promise<PaginatedData<User>> {
+    const queryBuilder = this.userRepository.createQueryBuilder('User');
+    return this.paginationService.paginate<User>(
+      this.userRepository,
+      queryBuilder,
+      +page,
+      +limit,
+    );
   }
 
   async hashPassword(password: string): Promise<string> {

@@ -14,6 +14,10 @@ export class Auth {
   @Column()
   refreshToken: string;
 
+  @Column()
+  updatedToken: string;
+
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
