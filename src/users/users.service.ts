@@ -1,4 +1,4 @@
-import {BadRequestException, ConflictException, Injectable, Logger, NotFoundException} from '@nestjs/common';
+import {BadRequestException, ConflictException, Logger, NotFoundException} from '@nestjs/common';
 import * as crypto from 'crypto';
 import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "../entities/user.entity";

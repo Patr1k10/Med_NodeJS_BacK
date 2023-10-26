@@ -4,7 +4,6 @@ import {DatabaseModule} from "./db/database.module";
 import {ConfigModule, } from "@nestjs/config";
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import {PaginationService} from "./common/pagination.service";
 
 @Module({
   imports: [DatabaseModule,
