@@ -67,7 +67,6 @@ export class UsersService {
     if (!user.id || typeof user.id !== 'number' || Number.isNaN(user.id)) {
       throw new BadRequestException('Invalid user ID');
     }
-    this.logger.log(`Successfully fetched user with ID: ${id}`);
     return user;
   }
 

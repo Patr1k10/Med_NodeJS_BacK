@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Logger, Param, Patch, Post, Query} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Patch, Post, Query} from '@nestjs/common';
 import {PaginationService} from "../common/pagination.service";
 import {PaginatedData} from "../types/interface/paginated.interface";
 import {User} from "../entities/user.entity";
@@ -10,7 +10,6 @@ import {UsersUpdateDto} from "./dto/users.update.dto";
 
 @Controller('users')
 export class UsersController {
-  private readonly logger: Logger = new Logger(UsersController.name)
   constructor(private readonly paginationService: PaginationService,
               @InjectRepository(User)
               private readonly userRepository: Repository<User>,
@@ -33,6 +32,11 @@ export class UsersController {
   @Delete(':id')
   async softDeleteUser(@Param('id') id: string): Promise<void> {
     await this.usersService.softDeleteUser(Number(id));
+  }
+
+  @Get(':id')
+  async getUserById(@Param() params?: User): Promise<User> {
+    return this.usersService.getUserById(params.id);
   }
 
   @Get()
