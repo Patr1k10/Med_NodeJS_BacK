@@ -1,13 +1,10 @@
 import {Logger, Module} from '@nestjs/common';
-
 import { HealthController } from './health.controller';
 import {DatabaseModule} from "./db/database.module";
 import {ConfigModule, } from "@nestjs/config";
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-
-
-
+import {PaginationService} from "./common/pagination.service";
 
 @Module({
   imports: [DatabaseModule,
@@ -17,7 +14,7 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     AuthModule,
   ],
-  controllers: [HealthController],
+  controllers: [HealthController,],
   providers: [Logger],
 })
 export class AppModule {}
