@@ -76,3 +76,34 @@ Replace your-app-name with the actual name of your Docker image.
 
 3. Access the Application:
    The application will be accessible at http://localhost:3000.
+4. Create docker-compose.yml:
+   Define services, ports, and dependencies in this file.
+
+4. Start Application Run in the directory with docker-compose.yml.
+```bash 
+docker-compose up
+```
+5. Use a `.env.sample` file with sample configuration values for your resources (such as database credentials). Developers can copy this file to .env and customize the values according to their 
+
+## TypeOrm
+### Migration Creation:
+
+To create a migration, use the following command:
+
+```shell
+npx typeorm migration:create src/migrations/your-migration-name   
+```
+
+This creates a new migration file in the migrations folder. The file contains up function (instructions for updating the database) and down function (instructions for rolling back changes).
+
+### Editing a Migration:
+
+In the migration file, define changes in the up function. For instance, if you're adding a new field, creating a table, or removing an existing field, describe it in the up function. In the down function, specify actions for rollback if needed.
+
+Applying a Migration:
+
+After editing the migration, apply it to the database with the command:
+
+```shell
+npx typeorm migration:run
+```
