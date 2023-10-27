@@ -6,7 +6,7 @@ export class Auth {
   id: number;
 
   @Column()
-  userId: number;
+  userEmail: string;
 
   @Column()
   accessToken: string;
