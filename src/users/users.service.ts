@@ -69,7 +69,7 @@ export class UsersService {
     );
   }
 
-  async hashPassword(password: string): Promise<string> {
+  private async hashPassword(password: string): Promise<string> {
     try {
       const salt = crypto.randomBytes(16).toString('hex');
       const derivedKey = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
