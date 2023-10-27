@@ -29,7 +29,7 @@ export class UsersService {
     const hashedPassword = await this.hashPassword(userDto.password);
     const user = this.userRepository.create({ ...userDto, password: hashedPassword });
     this.logger.log(`Successfully create user with ID: ${user.id}`);
-    return this.userRepository.save(user);
+    return await this.userRepository.save(user);
 
   }
 

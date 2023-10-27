@@ -11,11 +11,11 @@ export class Auth {
   @Column()
   accessToken: string;
 
-  @Column()
-  refreshToken: string;
+  @Column({ nullable: true })
+  refreshToken: string | null ;
 
-  @Column()
-  updatedToken: string;
+  @Column({ nullable: true })
+  updatedToken: string | null;
 
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
