@@ -6,9 +6,11 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import {TransformResponseInterceptor} from "./interceptor/response.interceptor";
 import {APP_INTERCEPTOR} from "@nestjs/core";
+import {PassportModule} from "@nestjs/passport";
 
 @Module({
   imports: [DatabaseModule,
+    PassportModule,
     ConfigModule.forRoot({
       isGlobal: true, // Make the configuration global
     }),

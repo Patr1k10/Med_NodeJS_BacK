@@ -7,6 +7,7 @@ import {User} from "../entities/user.entity";
 import {UsersAuthDto} from "../users/dto/users.auth.dto";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Auth} from "../entities/auth.entity";
+import {JwtPayload} from "jsonwebtoken";
 
 @Injectable()
 export class AuthService {
@@ -24,7 +25,7 @@ export class AuthService {
       this.logger.error('Invalid credentials');
       throw new UnauthorizedException('Invalid credentials');
     }
-    const payload = { username: user.email };
+    const payload = { userEmail: user.email };
     const accessToken = this.jwtService.sign(payload);
     const auth =  this.authRepository.create({accessToken: accessToken, userEmail: user.email});
     await this.authRepository.save(auth)
@@ -51,7 +52,17 @@ export class AuthService {
     }
     throw new UnauthorizedException('Invalid credentials');
   }
-
+  async validateUserByToken(authorizationHeader: string): Promise<User | null> {
+    try {
+      const token = authorizationHeader.split(' ')[1];
+      const payload: JwtPayload = this.jwtService.verify(token);
+      const { userEmail } = payload;
+      return await this.userRepository.findOne({where: {email: userEmail}});
+    } catch (error) {
+      this.logger.error(`Error validating token: ${error.message}`);
+      return null;
+    }
+  }
 
 }
 

@@ -11,5 +11,4 @@ export class UsersAuthDto {
   @IsNotEmpty()
   @Length(6, 30)
   password: string;
-
 }
