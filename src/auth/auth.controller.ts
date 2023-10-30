@@ -23,7 +23,6 @@ export class AuthController {
   @Get('auth0')
   @UseGuards(AuthGuard('auth0'))
   async login() {
-    console.log('1')
   }
 
   @Get('callback')
