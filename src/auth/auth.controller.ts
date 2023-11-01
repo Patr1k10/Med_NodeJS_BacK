@@ -28,8 +28,8 @@ export class AuthController {
 
   @Get('auth0')
   @UseGuards(AuthGuard('auth0'))
-  async getAuth0(@Req() req) {
-    const email = req.user.email; // Получите email из payload, который вернул Auth0Strategy
+  async loginAuth0(@Req() req) {
+    const email = req.user.email;
     return this.authService.loginAuth0(email);
   }
 }
