@@ -1,16 +1,15 @@
-import {Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards} from '@nestjs/common';
-import {PaginatedData} from "../types/interface/paginated.interface";
-import {User} from "../entities/user.entity";
-import {UsersService} from "./users.service";
-import {UsersCreateDto} from "./dto/users.create.dto";
-import {UsersUpdateDto} from "./dto/users.update.dto";
-import {AuthGuard} from "@nestjs/passport";
-import {GetUser} from "../decorator/getUser.decorator";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { PaginatedData } from '../types/interface/paginated.interface';
+import { User } from '../entities/user.entity';
+import { UsersService } from './users.service';
+import { UsersCreateDto } from './dto/users.create.dto';
+import { UsersUpdateDto } from './dto/users.update.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from '../decorator/getUser.decorator';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Post()
   async createUser(@Body() userDto: UsersCreateDto): Promise<UsersCreateDto> {
@@ -39,10 +38,7 @@ export class UsersController {
   }
 
   @Get()
-  async findAll(
-    @Query('page') page = 1,
-    @Query('limit') limit = 10,
-  ): Promise<PaginatedData<User>> {
+  async findAll(@Query('page') page = 1, @Query('limit') limit = 10): Promise<PaginatedData<User>> {
     return this.usersService.findAll(+page, +limit);
   }
 }
