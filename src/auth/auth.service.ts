@@ -22,30 +22,43 @@ export class AuthService {
 
   async login(userDto: UsersAuthDto): Promise<{ access_token: string; refreshToken: string }> {
     const user = await this.validateUser(userDto.email, userDto.password);
-    if (!user) {
-      this.logger.error('Invalid credentials');
-      throw new UnauthorizedException('Invalid credentials');
+    let auth = await this.authRepository.findOne({ where: { userEmail: user.email } });
+    if (!auth) {
+      const { access_token, refreshToken } = await this.generateTokens(user.email);
+      auth = this.authRepository.create({
+        accessToken: access_token,
+        refreshToken: refreshToken,
+        userEmail: user.email,
+      });
+    } else {
+      const { access_token, refreshToken } = await this.generateTokens(user.email);
+      auth.accessToken = access_token;
+      auth.refreshToken = refreshToken;
     }
-    const payload = { userEmail: user.email };
-    const accessToken = this.jwtService.sign(payload);
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '120h' });
-    const auth = this.authRepository.create({
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-      userEmail: user.email,
-    });
     await this.authRepository.save(auth);
     this.logger.log(`User logged in: ${user.email}`);
-
-    return { access_token: accessToken, refreshToken: refreshToken };
+    return await this.generateTokens(user.email);
   }
+
   async loginAuth0(email: string): Promise<{ access_token: string; refreshToken: string }> {
+    let auth = await this.authRepository.findOne({ where: { userEmail: email } });
+    if (!auth) {
+      const { access_token, refreshToken } = await this.generateTokens(email);
+      auth = this.authRepository.create({ accessToken: access_token, refreshToken: refreshToken, userEmail: email });
+    } else {
+      const { access_token, refreshToken } = await this.generateTokens(email);
+      auth.accessToken = access_token;
+      auth.refreshToken = refreshToken;
+    }
+    await this.authRepository.save(auth);
+    this.logger.log(`User logged in: ${email}`);
+    return await this.generateTokens(email);
+  }
+
+  private async generateTokens(email: string): Promise<{ access_token: string; refreshToken: string }> {
     const payload = { userEmail: email };
     const accessToken = this.jwtService.sign(payload);
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '120h' });
-    const auth = this.authRepository.create({ accessToken: accessToken, refreshToken: refreshToken, userEmail: email });
-    await this.authRepository.save(auth);
-    this.logger.log(`User logged in: ${email}`);
     return { access_token: accessToken, refreshToken: refreshToken };
   }
 

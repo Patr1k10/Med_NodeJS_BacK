@@ -20,6 +20,7 @@ export class AuthController {
     return await this.authService.validateUserByToken(authorizationHeader);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('refresh-token')
   async refreshTokens(@Body('refreshToken') refreshToken: string) {
     const { access_token, refreshToken: newRefreshToken } = await this.authService.refreshTokens(refreshToken);
