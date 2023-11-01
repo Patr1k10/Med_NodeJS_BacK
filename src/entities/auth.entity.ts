@@ -1,4 +1,4 @@
-import {Entity, Column, PrimaryGeneratedColumn, UpdateDateColumn, DeleteDateColumn} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
 
 @Entity()
 export class Auth {
@@ -12,11 +12,10 @@ export class Auth {
   accessToken: string;
 
   @Column({ nullable: true })
-  refreshToken: string | null ;
+  refreshToken: string | null;
 
   @Column({ nullable: true })
   updatedToken: string | null;
-
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
@@ -24,6 +23,6 @@ export class Auth {
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
 
-  @DeleteDateColumn({ type: 'timestamp'})
+  @DeleteDateColumn({ type: 'timestamp' })
   deleted_at: Date;
 }
