@@ -103,7 +103,6 @@ export class AuthService {
         await this.authRepository.update({ userEmail }, { refreshToken: newRefreshToken });
         return { access_token: newAccessToken, refreshToken: newRefreshToken };
       }
-      throw new UnauthorizedException('Invalid refreshToken');
     } catch (error) {
       this.logger.error(`Error refreshing tokens: ${error.message}`);
       throw new UnauthorizedException('Invalid refreshToken');
