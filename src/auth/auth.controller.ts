@@ -2,6 +2,8 @@ import {Body, Controller, Get, Headers, Post, UseGuards} from '@nestjs/common';
 import {AuthService} from "./auth.service";
 import {UsersAuthDto} from "../users/dto/users.auth.dto";
 import {AuthGuard} from "@nestjs/passport";
+import {GetUser} from "../decorator/getUser.decorator";
+import {User} from "../entities/user.entity";
 
 @Controller('auth')
 export class AuthController {
@@ -16,8 +18,8 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(AuthGuard('jwt'))
-  async getProfile(@Headers('authorization') authorizationHeader: string) {
-    return await this.authService.validateUserByToken(authorizationHeader);
+  async getProfile(@GetUser() user: User) {
+    return user
   }
 
   @Get('auth0')

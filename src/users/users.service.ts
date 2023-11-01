@@ -1,4 +1,4 @@
-import {ConflictException, Logger, NotFoundException} from '@nestjs/common';
+import {ConflictException, ForbiddenException, Logger, NotFoundException} from '@nestjs/common';
 import * as crypto from 'crypto';
 import {InjectRepository} from "@nestjs/typeorm";
 import {User} from "../entities/user.entity";
@@ -33,23 +33,31 @@ export class UsersService {
 
   }
 
-  async updateUser(id: number, updateUserDto: UsersUpdateDto): Promise<UsersUpdateDto> {
-    const user = await this.userRepository.findOne({ where: { id } });
+  async updateUser(requestingUser: User, userId: number, updateUserDto: UsersUpdateDto,): Promise<UsersUpdateDto> {
+    if (requestingUser.id !== userId) {
+      throw new ForbiddenException('You are not authorized to update this user');
+    }
+    const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
-      this.logger.warn(`User not found with ID: ${id}`);
+      this.logger.warn(`User not found with ID: ${userId}`);
       throw new NotFoundException('User not found');
     }
-    return this.userRepository.save({ ...user, ...updateUserDto });
+    const updatedUser = { ...user, ...updateUserDto };
+    return this.userRepository.save(updatedUser);
   }
 
-  async softDeleteUser(id: number): Promise<void> {
-    this.logger.log(`Attempting to soft-delete user with ID: ${id}`);
-    const result = await this.userRepository.softDelete(id);
-    if (result.affected === 0) {
-      this.logger.warn(`User not found with ID: ${id}`);
-      throw new NotFoundException(`User with ID ${id} not found`);
+  async softDeleteUser(user: User): Promise<void> {
+    this.logger.log(`Attempting to soft-delete user with ID: ${user.id}`);
+    if (user.id !== user.id) {
+      this.logger.warn(`User with ID ${user.id} is not authorized to delete this account`);
+      throw new ForbiddenException('You are not authorized to delete this account');
     }
-    this.logger.log(`Successfully soft-deleted user with ID: ${id}`);
+    const result = await this.userRepository.softDelete(user.id);
+    if (result.affected === 0) {
+      this.logger.warn(`User not found with ID: ${user.id}`);
+      throw new NotFoundException(`User with ID ${user.id} not found`);
+    }
+    this.logger.log(`Successfully soft-deleted user with ID: ${user.id}`);
   }
   async getUserById(id: number): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id } })
