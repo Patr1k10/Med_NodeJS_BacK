@@ -34,6 +34,15 @@ export class AuthService {
     return { access_token: accessToken };
   }
 
+  async loginAuth0(email: string): Promise<{ access_token: string }> {
+    const payload = { userEmail: email };
+    const accessToken = this.jwtService.sign(payload);
+    const auth =  this.authRepository.create({accessToken: accessToken, userEmail: email});
+    await this.authRepository.save(auth)
+    this.logger.log(`User logged in: ${email}`);
+    return { access_token: accessToken };
+  }
+
   private async comparePasswords(password: string, userPasswordHash: string): Promise<boolean> {
     try {
       const [salt, userHash] = userPasswordHash.split(':');

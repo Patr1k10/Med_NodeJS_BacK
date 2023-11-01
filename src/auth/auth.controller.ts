@@ -22,12 +22,9 @@ export class AuthController {
 
   @Get('auth0')
   @UseGuards(AuthGuard('auth0'))
-  async login() {
-  }
+  async login() {}
 
   @Get('callback')
   @UseGuards(AuthGuard('auth0'))
-  async callback(@Req() req: Request) {
-    console.log('Access Token:', req);
-  }
+  async callback() {}
 }
