@@ -1,14 +1,12 @@
-import {Body, Controller, Get, Post, UseGuards} from '@nestjs/common';
-import {AuthService} from "./auth.service";
-import {UsersAuthDto} from "../users/dto/users.auth.dto";
-import {AuthGuard} from "@nestjs/passport";
-import {GetUser} from "../decorator/getUser.decorator";
-import {User} from "../entities/user.entity";
+import { Body, Controller, Get, Headers, Post, Req, UseGuards } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { UsersAuthDto } from '../users/dto/users.auth.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {
-  }
+  constructor(private readonly authService: AuthService) {}
 
   @Post('login')
   async login1(@Body() userDto: UsersAuthDto) {
@@ -17,16 +15,22 @@ export class AuthController {
   }
 
   @Get('me')
-  @UseGuards(AuthGuard('jwt'))
-  async getProfile(@GetUser() user: User) {
-    return user
+  @UseGuards(JwtAuthGuard)
+  async getProfile(@Headers('authorization') authorizationHeader: string) {
+    return await this.authService.validateUserByToken(authorizationHeader);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('refresh-token')
+  async refreshTokens(@Body('refreshToken') refreshToken: string) {
+    const { access_token, refreshToken: newRefreshToken } = await this.authService.refreshTokens(refreshToken);
+    return { access_token, refreshToken: newRefreshToken };
   }
 
   @Get('auth0')
   @UseGuards(AuthGuard('auth0'))
-  async login() {}
-
-  @Get('callback')
-  @UseGuards(AuthGuard('auth0'))
-  async callback() {}
+  async loginAuth0(@Req() req) {
+    const email = req.user.email;
+    return this.authService.loginAuth0(email);
+  }
 }
