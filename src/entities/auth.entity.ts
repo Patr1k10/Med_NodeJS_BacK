@@ -15,7 +15,7 @@ export class Auth {
   refreshToken: string | null;
 
   @Column({ nullable: true })
-  updatedToken: string | null;
+  actionToken: string | null;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
