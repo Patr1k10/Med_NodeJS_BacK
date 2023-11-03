@@ -20,46 +20,58 @@ export class AuthService {
     private readonly authRepository: Repository<Auth>,
   ) {}
 
-  async login(userDto: UsersAuthDto): Promise<{ access_token: string; refreshToken: string }> {
+  async login(userDto: UsersAuthDto): Promise<{ accessToken: string; refreshToken: string; actionToken: string }> {
     const user = await this.validateUser(userDto.email, userDto.password);
     let auth = await this.authRepository.findOne({ where: { userEmail: user.email } });
     if (!auth) {
-      const { access_token, refreshToken } = await this.generateTokens(user.email);
+      const { accessToken, refreshToken, actionToken } = await this.generateTokens(user.email);
       auth = this.authRepository.create({
-        accessToken: access_token,
+        accessToken: accessToken,
         refreshToken: refreshToken,
+        actionToken: actionToken,
         userEmail: user.email,
       });
     } else {
-      const { access_token, refreshToken } = await this.generateTokens(user.email);
-      auth.accessToken = access_token;
+      const { accessToken, refreshToken, actionToken } = await this.generateTokens(user.email);
+      auth.accessToken = accessToken;
       auth.refreshToken = refreshToken;
+      auth.actionToken = actionToken;
     }
     await this.authRepository.save(auth);
     this.logger.log(`User logged in: ${user.email}`);
-    return await this.generateTokens(user.email);
+    return this.generateTokens(user.email);
   }
 
-  async loginAuth0(email: string): Promise<{ access_token: string; refreshToken: string }> {
+  async loginAuth0(email: string): Promise<{ accessToken: string; refreshToken: string; actionToken: string }> {
     let auth = await this.authRepository.findOne({ where: { userEmail: email } });
     if (!auth) {
-      const { access_token, refreshToken } = await this.generateTokens(email);
-      auth = this.authRepository.create({ accessToken: access_token, refreshToken: refreshToken, userEmail: email });
+      const { accessToken, refreshToken, actionToken } = await this.generateTokens(email);
+      auth = this.authRepository.create({
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        actionToken: actionToken,
+        userEmail: email,
+      });
     } else {
-      const { access_token, refreshToken } = await this.generateTokens(email);
-      auth.accessToken = access_token;
+      const { accessToken, refreshToken, actionToken } = await this.generateTokens(email);
+      auth.accessToken = accessToken;
       auth.refreshToken = refreshToken;
+      auth.actionToken = actionToken;
     }
     await this.authRepository.save(auth);
     this.logger.log(`User logged in: ${email}`);
-    return await this.generateTokens(email);
+    return this.generateTokens(email);
   }
 
-  private async generateTokens(email: string): Promise<{ access_token: string; refreshToken: string }> {
+  private async generateTokens(
+    email: string,
+  ): Promise<{ accessToken: string; refreshToken: string; actionToken: string }> {
     const payload = { userEmail: email };
-    const accessToken = this.jwtService.sign(payload);
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '120h' });
-    return { access_token: accessToken, refreshToken: refreshToken };
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '24h' });
+    const actionToken = this.jwtService.sign(payload, { expiresIn: '1h' });
+
+    return { accessToken: accessToken, refreshToken: refreshToken, actionToken: actionToken };
   }
 
   private async comparePasswords(password: string, userPasswordHash: string): Promise<boolean> {
