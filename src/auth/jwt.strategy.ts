@@ -1,7 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { AuthService } from './auth.service';
 import { JwtPayload } from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
 import { InjectRepository } from '@nestjs/typeorm';

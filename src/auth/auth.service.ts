@@ -104,16 +104,16 @@ export class AuthService {
     }
   }
 
-  async refreshTokens(refreshToken: string): Promise<{ access_token: string; refreshToken: string }> {
+  async refreshTokens(refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
     try {
       const payload: JwtPayload = this.jwtService.verify(refreshToken);
       const { userEmail } = payload;
       const user = await this.userRepository.findOne({ where: { email: userEmail } });
       if (user) {
         const newAccessToken = this.jwtService.sign({ userEmail });
-        const newRefreshToken = this.jwtService.sign({ userEmail }, { expiresIn: '120h' });
+        const newRefreshToken = this.jwtService.sign({ userEmail }, { expiresIn: '24h' });
         await this.authRepository.update({ userEmail }, { refreshToken: newRefreshToken });
-        return { access_token: newAccessToken, refreshToken: newRefreshToken };
+        return { accessToken: newAccessToken, refreshToken: newRefreshToken };
       }
     } catch (error) {
       this.logger.error(`Error refreshing tokens: ${error.message}`);
