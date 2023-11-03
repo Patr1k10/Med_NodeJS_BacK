@@ -2,7 +2,6 @@ import { Body, Controller, Get, Post, Req, UseGuards, Headers } from '@nestjs/co
 import { AuthService } from './auth.service';
 import { UsersAuthDto } from '../users/dto/users.auth.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -15,12 +14,12 @@ export class AuthController {
   }
 
   @Get('me')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   async getProfile(@Headers('authorization') authorizationHeader: string) {
     return await this.authService.validateUserByToken(authorizationHeader);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Post('refresh-token')
   async refreshTokens(@Body('refreshToken') refreshToken: string) {
     const { access_token, refreshToken: newRefreshToken } = await this.authService.refreshTokens(refreshToken);
