@@ -1,10 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
-import { PaginatedData } from '../types/interface/paginated.interface';
 import { User } from '../entities/user.entity';
 import { UsersService } from './users.service';
 import { UsersCreateDto } from './dto/users.create.dto';
 import { UsersUpdateDto } from './dto/users.update.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { PaginatedData } from '../types/interface';
 
 @Controller('users')
 export class UsersController {
@@ -24,7 +24,7 @@ export class UsersController {
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'))
   async softDeleteUser(@Param('id') id: string): Promise<void> {
-    await this.usersService.softDeleteUser(Number(id));
+    await this.usersService.softDeleteUser(+id);
   }
 
   @Get(':id')
