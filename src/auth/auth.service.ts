@@ -24,10 +24,11 @@ export class AuthService {
     const user = await this.validateUser(userDto.email, userDto.password);
     let auth = await this.authRepository.findOne({ where: { userEmail: user.email } });
     if (!auth) {
-      const { accessToken, refreshToken } = await this.generateTokens(user.email);
+      const { accessToken, refreshToken, actionToken } = await this.generateTokens(user.email);
       auth = this.authRepository.create({
         accessToken: accessToken,
         refreshToken: refreshToken,
+        actionToken: actionToken,
         userEmail: user.email,
       });
     } else {
