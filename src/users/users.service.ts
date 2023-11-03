@@ -1,12 +1,12 @@
-import { ConflictException, ForbiddenException, Logger, NotFoundException } from '@nestjs/common';
+import { ConflictException, Logger, NotFoundException } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { UsersCreateDto } from './dto/users.create.dto';
 import { UsersUpdateDto } from './dto/users.update.dto';
-import { PaginatedData } from '../types/interface/paginated.interface';
 import { PaginationService } from '../common/pagination.service';
+import { PaginatedData } from '../types/interface';
 
 export class UsersService {
   private readonly logger: Logger = new Logger(UsersService.name);
