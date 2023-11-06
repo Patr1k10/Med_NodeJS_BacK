@@ -1,4 +1,12 @@
-import { Column, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  JoinTable, ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { UserRole } from '../../types/enums/user.role';
 import { Company } from '../../company/entity/company.entity';
 
@@ -31,6 +39,14 @@ export class User {
 
   @OneToMany(() => Company, (company) => company.owner)
   companies: Company[];
+
+  @ManyToMany(() => Company, { cascade: true })
+  @JoinTable()
+  invitedCompanies: Company[];
+
+  @ManyToMany(() => Company, { cascade: true })
+  @JoinTable()
+  requestedCompanies: Company[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

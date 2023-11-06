@@ -8,6 +8,7 @@ import { TransformResponseInterceptor } from './interceptor/response.interceptor
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { PassportModule } from '@nestjs/passport';
 import { CompanyModule } from './company/company.module';
+import { InvitationModule } from './invitation/invitation.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { CompanyModule } from './company/company.module';
     }),
     UsersModule,
     AuthModule,
+    InvitationModule,
   ],
   controllers: [HealthController],
   providers: [
