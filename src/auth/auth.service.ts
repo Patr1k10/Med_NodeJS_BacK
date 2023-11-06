@@ -3,11 +3,11 @@ import { AuthController } from './auth.controller';
 import * as crypto from 'crypto';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
-import { User } from '../entities/user.entity';
 import { UsersAuthDto } from '../users/dto/users.auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Auth } from '../entities/auth.entity';
 import { JwtPayload } from 'jsonwebtoken';
+import { User } from '../users/entities/user.entity';
+import { Auth } from './entities/auth.entity';
 
 @Injectable()
 export class AuthService {

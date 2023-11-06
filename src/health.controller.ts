@@ -1,13 +1,12 @@
-import {Controller, Get, HttpStatus, Logger} from '@nestjs/common';
-import {IHealthCheck} from "./types/interface/health..heckResponse.interface";
-
+import { Controller, Get, HttpStatus, Logger } from '@nestjs/common';
+import { IHealthCheck } from './types/interface/health..heckResponse.interface';
 
 @Controller()
 export class HealthController {
-  private readonly logger: Logger = new Logger(HealthController.name)
+  private readonly logger: Logger = new Logger(HealthController.name);
   @Get()
   async healthCheck(): Promise<IHealthCheck> {
-    this.logger.log('healthCheck')
+    this.logger.log('healthCheck');
     return {
       status_code: HttpStatus.OK,
       detail: 'ok',

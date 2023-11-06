@@ -1,5 +1,7 @@
-import { Column, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { UserRole } from '../types/enums/user.role';
+import { Column, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { UserRole } from '../../types/enums/user.role';
+import { Company } from '../../company/entity/company.entity';
+
 
 @Entity()
 export class User {
@@ -27,6 +29,9 @@ export class User {
     default: 'user',
   })
   role: UserRole;
+
+  @OneToMany(() => Company, (company) => company.owner)
+  companies: Company[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
