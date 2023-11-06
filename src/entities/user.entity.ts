@@ -1,37 +1,32 @@
-import {
-  Column,
-  DeleteDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { UserRole } from '../types/enums/user.role';
 
 @Entity()
-export class User  {
+export class User {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @Column({ unique: true })
-  username: string;
+  @Column({ unique: true, nullable: true })
+  username: string | null;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: true })
   email: string;
 
-  @Column()
-  firstName: string;
+  @Column({ nullable: true })
+  firstName: string | null;
 
-  @Column()
-  lastName: string;
+  @Column({ nullable: true })
+  lastName: string | null;
 
-  @Column()
-  password: string;
+  @Column({ nullable: true })
+  password: string | null;
 
   @Column({
     type: 'enum',
     enum: ['admin', 'moderator', 'user'],
     default: 'user',
   })
-  role: string;
+  role: UserRole;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
@@ -39,7 +34,6 @@ export class User  {
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
 
-  @DeleteDateColumn({ type: 'timestamp'})
+  @DeleteDateColumn({ type: 'timestamp' })
   deleted_at: Date;
-
 }
