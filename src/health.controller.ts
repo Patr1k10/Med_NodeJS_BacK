@@ -1,5 +1,5 @@
 import { Controller, Get, HttpStatus, Logger } from '@nestjs/common';
-import { IHealthCheck } from './types/interface/health..heckResponse.interface';
+import { IHealthCheck } from './types/interface';
 
 @Controller()
 export class HealthController {

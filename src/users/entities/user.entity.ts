@@ -2,7 +2,6 @@ import { Column, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Up
 import { UserRole } from '../../types/enums/user.role';
 import { Company } from '../../company/entity/company.entity';
 
-
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('increment')
