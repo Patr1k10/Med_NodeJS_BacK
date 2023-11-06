@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
 @Entity()
@@ -17,4 +17,13 @@ export class Company {
 
   @ManyToOne(() => User, (user) => user.companies)
   owner: User;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date;
+
+  @DeleteDateColumn({ type: 'timestamp' })
+  deleted_at: Date;
 }
