@@ -2,7 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { User } from '../users/entities/user.entity';
-import { InvitationDto } from './entity/invitation.dto';
+import { InvitationDto } from './dto/invitation.dto';
 import { Invitation } from './entity/invitation.entity';
 import { Company } from '../company/entity/company.entity';
 import { paginate } from '../common/pagination';
@@ -55,6 +55,16 @@ export class InvitationService {
     }
     this.logger.log(`Invitation rejected with ID: ${invitationId}`);
     await this.invitationRepository.delete(invitationId);
+  }
+
+  async softDeleteInvitation(invitationId: number): Promise<void> {
+    const invitation = await this.invitationRepository.findOne({ where: { id: invitationId } });
+    if (!invitation) {
+      this.logger.warn(`Invitation with ID ${invitationId} not found`);
+      throw new NotFoundException('Invitation not found');
+    }
+    await this.invitationRepository.save(invitation);
+    this.logger.log(`Invitation soft deleted successfully. ID: ${invitationId}`);
   }
 
   async getInvitationsAndRequestsForUser(user: User, page: number, limit: number): Promise<PaginatedData<Invitation>> {

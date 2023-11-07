@@ -1,8 +1,7 @@
-import { Controller, Post, Body, Param, UseGuards, Query, Get } from '@nestjs/common';
+import { Controller, Post, Body, Param, UseGuards, Query, Get, Delete } from '@nestjs/common';
 import { InvitationService } from './invitation.service';
-import { InvitationDto } from './entity/invitation.dto';
+import { InvitationDto } from './dto/invitation.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { AppGuard } from '../auth/guard/app.guard';
 import { PaginatedData } from '../types/interface';
 import { Invitation } from './entity/invitation.entity';
 import { GetUser } from '../decorator/getUser.decorator';
@@ -12,22 +11,27 @@ import { User } from '../users/entities/user.entity';
 export class InvitationController {
   constructor(private readonly invitationService: InvitationService) {}
 
-  @UseGuards(AuthGuard('jwt'), AppGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   async sendInvitation(@Body() invitationDto: InvitationDto): Promise<void> {
     await this.invitationService.sendInvitation(invitationDto);
   }
-  @UseGuards(AuthGuard('jwt'), AppGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Post(':id/accept')
-  async acceptInvitation(@Param('id') id: number): Promise<void> {
+  async acceptInvitation(@Param('id') id: string): Promise<void> {
     await this.invitationService.acceptInvitation(+id);
   }
-  @UseGuards(AuthGuard('jwt'), AppGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Post(':id/reject')
-  async rejectInvitation(@Param('id') id: number): Promise<void> {
+  async rejectInvitation(@Param('id') id: string): Promise<void> {
     await this.invitationService.rejectInvitation(+id);
   }
-  @UseGuards(AuthGuard('jwt'), AppGuard)
+  @Delete(':id')
+  async softDeleteInvitation(@Param('id') id: string): Promise<void> {
+    await this.invitationService.softDeleteInvitation(+id);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   async getInvitationsAndRequests(
     @GetUser() user: User,

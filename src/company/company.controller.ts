@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { Company } from './entity/company.entity';
 import { GetUser } from '../decorator/getUser.decorator';
@@ -7,7 +7,6 @@ import { CompanyCreateDto } from './dto /company.create.dto';
 import { CompanyUpdateDto } from './dto /company.update.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { PaginatedData } from '../types/interface';
-import { AppGuard } from '../auth/guard/app.guard';
 import { CompanyGuard } from '../auth/guard/company.guard';
 
 @Controller('companies')
@@ -29,7 +28,6 @@ export class CompanyController {
   ): Promise<Company> {
     return this.companyService.updateCompany(+id, user, companyDto);
   }
-
 
   @Get(':id')
   @UseGuards(AuthGuard('jwt'), CompanyGuard)
