@@ -8,36 +8,39 @@ import { CompanyUpdateDto } from './dto /company.update.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { PaginatedData } from '../types/interface';
 import { AppGuard } from '../auth/guard/app.guard';
+import { CompanyGuard } from '../auth/guard/company.guard';
 
 @Controller('companies')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
   @Post()
-  @UseGuards(AuthGuard('jwt'), AppGuard)
+  @UseGuards(AuthGuard('jwt'))
   createCompany(@GetUser() user: User, @Body() companyDto: CompanyCreateDto): Promise<Company> {
     return this.companyService.createCompany(user, companyDto);
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard('jwt'), AppGuard)
+  @UseGuards(AuthGuard('jwt'), CompanyGuard)
   updateCompany(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @GetUser() user: User,
     @Body() companyDto: CompanyUpdateDto,
   ): Promise<Company> {
-    return this.companyService.updateCompany(id, user, companyDto);
+    return this.companyService.updateCompany(+id, user, companyDto);
   }
 
+
   @Get(':id')
-  getCompanyById(@Param('id', ParseIntPipe) id: number): Promise<Company> {
-    return this.companyService.getCompanyById(id);
+  @UseGuards(AuthGuard('jwt'), CompanyGuard)
+  getCompanyById(@Param('id') id: string): Promise<Company> {
+    return this.companyService.getCompanyById(+id);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard('jwt'), AppGuard)
-  deleteCompany(@GetUser() user: User, @Param('id', ParseIntPipe) id: number): Promise<void> {
-    return this.companyService.deleteCompany(id, user);
+  @UseGuards(AuthGuard('jwt'), CompanyGuard)
+  deleteCompany(@GetUser() user: User, @Param('id') id: string): Promise<void> {
+    return this.companyService.deleteCompany(+id, user);
   }
 
   @Get()

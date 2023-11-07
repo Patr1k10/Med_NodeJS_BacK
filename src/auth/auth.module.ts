@@ -9,6 +9,8 @@ import { Auth0Strategy } from './strategy/auth0.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { User } from '../users/entities/user.entity';
 import { Auth } from './entities/auth.entity';
+import { Company } from '../company/entity/company.entity';
+import { AppGuard } from './guard/app.guard';
 
 dotenv.config();
 
