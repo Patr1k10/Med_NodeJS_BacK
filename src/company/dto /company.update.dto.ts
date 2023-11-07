@@ -1,5 +1,4 @@
 import { IsString, IsBoolean, Length } from 'class-validator';
-
 export class CompanyUpdateDto {
   @IsString()
   @Length(3, 50)

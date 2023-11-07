@@ -14,30 +14,26 @@ export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
   @Post()
-  @UseGuards(AuthGuard('jwt'), CompanyGuard)
+  @UseGuards(AuthGuard('jwt'))
   createCompany(@GetUser() user: User, @Body() companyDto: CompanyCreateDto): Promise<Company> {
     return this.companyService.createCompany(user, companyDto);
   }
 
   @Patch(':id')
   @UseGuards(AuthGuard('jwt'), CompanyGuard)
-  updateCompany(
-    @Param('id', ParseIntPipe) id: number,
-    @GetUser() user: User,
-    @Body() companyDto: CompanyUpdateDto,
-  ): Promise<Company> {
-    return this.companyService.updateCompany(id, user, companyDto);
+  updateCompany(@Param('id') id: string, @Body() companyDto: CompanyUpdateDto): Promise<Company> {
+    return this.companyService.updateCompany(+id, companyDto);
   }
 
   @Get(':id')
-  getCompanyById(@Param('id', ParseIntPipe) id: number): Promise<Company> {
-    return this.companyService.getCompanyById(id);
+  getCompanyById(@Param('id') id: string): Promise<Company> {
+    return this.companyService.getCompanyById(+id);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'), CompanyGuard)
-  deleteCompany(@GetUser() user: User, @Param('id', ParseIntPipe) id: number): Promise<void> {
-    return this.companyService.deleteCompany(id, user);
+  deleteCompany(@Param('id') id: string): Promise<void> {
+    return this.companyService.deleteCompany(+id);
   }
 
   @Get()
