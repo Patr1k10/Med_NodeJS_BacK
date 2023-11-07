@@ -7,20 +7,20 @@ import { CompanyCreateDto } from './dto /company.create.dto';
 import { CompanyUpdateDto } from './dto /company.update.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { PaginatedData } from '../types/interface';
-import { AppGuard } from '../auth/guard/app.guard';
+import { CompanyGuard } from '../auth/guard/company.guard';
 
 @Controller('companies')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
 
   @Post()
-  @UseGuards(AuthGuard('jwt'), AppGuard)
+  @UseGuards(AuthGuard('jwt'), CompanyGuard)
   createCompany(@GetUser() user: User, @Body() companyDto: CompanyCreateDto): Promise<Company> {
     return this.companyService.createCompany(user, companyDto);
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard('jwt'), AppGuard)
+  @UseGuards(AuthGuard('jwt'), CompanyGuard)
   updateCompany(
     @Param('id', ParseIntPipe) id: number,
     @GetUser() user: User,
@@ -35,7 +35,7 @@ export class CompanyController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard('jwt'), AppGuard)
+  @UseGuards(AuthGuard('jwt'), CompanyGuard)
   deleteCompany(@GetUser() user: User, @Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.companyService.deleteCompany(id, user);
   }
