@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { User } from '../users/entities/user.entity';
@@ -31,7 +31,7 @@ export class InvitationService {
       receiver,
       company,
     });
-    this.logger.log(`Invitation sent: ${JSON.stringify(invitation)}`);
+    this.logger.log(`Invitation sent: ${receiverId}`);
     return await this.invitationRepository.save(invitation);
   }
 
@@ -44,7 +44,7 @@ export class InvitationService {
     invitation.company.members.push(invitation.receiver);
     await this.companyRepository.save(invitation.company);
     await this.invitationRepository.delete(invitationId);
-    this.logger.log(`Invitation accepted: ${JSON.stringify(invitation)}`);
+    this.logger.log(`Invitation accepted: ${invitationId}`);
   }
 
   async rejectInvitation(invitationId: number): Promise<void> {

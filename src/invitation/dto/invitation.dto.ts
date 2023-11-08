@@ -3,13 +3,13 @@ import { IsInt, IsNotEmpty } from 'class-validator';
 export class InvitationDto {
   @IsInt()
   @IsNotEmpty()
-  senderId: number;
+  senderId?: number;
 
   @IsInt()
   @IsNotEmpty()
-  receiverId: number;
+  receiverId?: number;
 
   @IsInt()
   @IsNotEmpty()
-  companyId: number;
+  companyId?: number;
 }

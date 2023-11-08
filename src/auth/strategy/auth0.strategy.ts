@@ -35,7 +35,6 @@ export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
       userEntity = this.userRepository.create({ email });
       await this.userRepository.save(userEntity);
     }
-    console.log(userEntity);
     return userEntity;
   }
 }

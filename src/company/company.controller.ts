@@ -41,6 +41,18 @@ export class CompanyController {
     return this.companyService.deleteCompany(+id, user);
   }
 
+  @Delete(':id/exclude-user/:userId')
+  @UseGuards(AuthGuard('jwt'), CompanyGuard)
+  async excludeUserFromCompany(@Param('id') companyId: string, @Param('userId') excludeUserId: string): Promise<void> {
+    return this.companyService.excludeUserFromCompany(+excludeUserId, +companyId);
+  }
+
+  @Delete(':id/leave')
+  @UseGuards(AuthGuard('jwt'))
+  async leaveCompany(@GetUser() user: User, @Param('id') companyId: number): Promise<void> {
+    return this.companyService.leaveCompany(+user.id, +companyId);
+  }
+
   @Get()
   getAllCompanies(@Query('page') page = 1, @Query('limit') limit = 10): Promise<PaginatedData<Company>> {
     return this.companyService.findAll(+page, +limit);

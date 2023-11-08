@@ -15,6 +15,8 @@ export class CompanyService {
   constructor(
     @InjectRepository(Company)
     private readonly companyRepository: Repository<Company>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async createCompany(user: User, companyDto: CompanyCreateDto): Promise<Company> {
@@ -65,6 +67,26 @@ export class CompanyService {
       throw new NotFoundException(`Company with ID ${id} not found`);
     }
     this.logger.log(`Successfully soft-deleted company with ID: ${id}`);
+  }
+
+  async excludeUserFromCompany(excludeUserId: number, companyId: number): Promise<void> {
+    const excludeUser = await this.userRepository.findOne({ where: { id: excludeUserId } });
+    const company = await this.companyRepository.findOne({ where: { id: companyId } });
+    if (!excludeUser || !company) {
+      throw new NotFoundException('User or company not found');
+    }
+    company.members = company.members.filter((member) => member.id !== excludeUser.id);
+    await this.companyRepository.save(company);
+  }
+
+  async leaveCompany(userId: number, companyId: number): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const company = await this.companyRepository.findOne({ where: { id: companyId } });
+    if (!user || !company) {
+      throw new NotFoundException('User or company not found');
+    }
+    company.members = company.members.filter((member) => member.id !== userId);
+    await this.companyRepository.save(company);
   }
 
   async findAll(page = 1, limit = 10): Promise<PaginatedData<Company>> {
