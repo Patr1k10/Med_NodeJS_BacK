@@ -26,6 +26,7 @@ export class CompanyController {
   }
 
   @Get(':id')
+  @UseGuards(AuthGuard('jwt'))
   getCompanyById(@Param('id') id: string): Promise<Company> {
     return this.companyService.getCompanyById(+id);
   }
@@ -37,6 +38,7 @@ export class CompanyController {
   }
 
   @Get()
+  @UseGuards(AuthGuard('jwt'))
   getAllCompanies(@Query('page') page = 1, @Query('limit') limit = 10): Promise<PaginatedData<Company>> {
     return this.companyService.findAll(+page, +limit);
   }

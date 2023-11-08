@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
@@ -22,7 +22,7 @@ export class CompanyGuard implements CanActivate {
     });
 
     if (!company) {
-      throw new UnauthorizedException('Company not found');
+      throw new ForbiddenException('Company not found');
     }
 
     if (user.id !== company.owner.id) {
