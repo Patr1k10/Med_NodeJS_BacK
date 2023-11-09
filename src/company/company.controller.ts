@@ -9,6 +9,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { PaginatedData } from '../types/interface';
 import { CompanyGuard } from '../auth/guard/company.guard';
 import { Invitation } from '../invitation/entity/invitation.entity';
+import { CompanyGuard } from '../auth/guard/company.guard';
 
 @Controller('companies')
 export class CompanyController {
@@ -28,6 +29,9 @@ export class CompanyController {
     @Body() companyDto: CompanyUpdateDto,
   ): Promise<Company> {
     return this.companyService.updateCompany(+id, user, companyDto);
+  @UseGuards(AuthGuard('jwt'), CompanyGuard)
+  updateCompany(@Param('id') id: string, @Body() companyDto: CompanyUpdateDto): Promise<Company> {
+    return this.companyService.updateCompany(+id, companyDto);
   }
 
   @Get(':id')
@@ -52,6 +56,9 @@ export class CompanyController {
     @Query('limit') limit = 10,
   ): Promise<PaginatedData<Invitation>> {
     return await this.companyService.getCompanyInvitations(+id, page, limit);
+  @UseGuards(AuthGuard('jwt'))
+  getCompanyById(@Param('id') id: string): Promise<Company> {
+    return this.companyService.getCompanyById(+id);
   }
 
   @Delete(':id')
@@ -70,9 +77,13 @@ export class CompanyController {
   @UseGuards(AuthGuard('jwt'))
   async leaveCompany(@GetUser() user: User, @Param('id') companyId: number): Promise<void> {
     return this.companyService.leaveCompany(+user.id, +companyId);
+  @UseGuards(AuthGuard('jwt'), CompanyGuard)
+  deleteCompany(@Param('id') id: string): Promise<void> {
+    return this.companyService.deleteCompany(+id);
   }
 
   @Get()
+  @UseGuards(AuthGuard('jwt'))
   getAllCompanies(@Query('page') page = 1, @Query('limit') limit = 10): Promise<PaginatedData<Company>> {
     return this.companyService.findAll(+page, +limit);
   }

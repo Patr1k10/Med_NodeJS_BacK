@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Company } from './entity/company.entity';
@@ -57,28 +57,19 @@ export class CompanyService {
     }
   }
 
-  async updateCompany(id: number, user: User, companyDto: CompanyUpdateDto): Promise<Company> {
-    const { name, description, isVisible } = companyDto;
+  async updateCompany(id: number, companyDto: CompanyUpdateDto): Promise<Company> {
     const company = await this.getCompanyById(id);
-    if (company.owner.id !== user.id) {
-      this.logger.warn(`User with ID ${user.id} is not authorized to update this company`);
-      throw new UnauthorizedException('You do not have permission to update this company');
+    if (!company) {
+      this.logger.warn(`Company not found with ID: ${id}`);
+      throw new NotFoundException('Company not found');
     }
-    if (name) company.name = name;
-    if (description) company.description = description;
-    if (isVisible !== undefined) company.isVisible = isVisible;
-    const updatedCompany = await this.companyRepository.save(company);
-    this.logger.log(`Company updated successfully. ID: ${updatedCompany.id}`);
+    await this.companyRepository.update(id, companyDto);
+    const updatedCompany = await this.getCompanyById(id);
+    this.logger.log(`Company updated successfully. ID: ${id}`);
     return updatedCompany;
   }
 
-  async deleteCompany(id: number, user: User): Promise<void> {
-    this.logger.log(`Attempting to soft-delete company with ID: ${id}`);
-    const company = await this.getCompanyById(id);
-    if (company.owner.id !== user.id) {
-      this.logger.warn(`User with ID ${user.id} is not authorized to delete this company`);
-      throw new UnauthorizedException('You do not have permission to delete this company');
-    }
+  async deleteCompany(id: number): Promise<void> {
     const result = await this.companyRepository.softDelete(id);
     if (result.affected === 0) {
       this.logger.warn(`Company not found with ID: ${id}`);
