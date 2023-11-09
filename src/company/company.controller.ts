@@ -9,7 +9,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { PaginatedData } from '../types/interface';
 import { CompanyGuard } from '../auth/guard/company.guard';
 import { Invitation } from '../invitation/entity/invitation.entity';
-import { CompanyGuard } from '../auth/guard/company.guard';
 
 @Controller('companies')
 export class CompanyController {
@@ -22,13 +21,6 @@ export class CompanyController {
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard('jwt'), CompanyGuard)
-  updateCompany(
-    @Param('id') id: string,
-    @GetUser() user: User,
-    @Body() companyDto: CompanyUpdateDto,
-  ): Promise<Company> {
-    return this.companyService.updateCompany(+id, user, companyDto);
   @UseGuards(AuthGuard('jwt'), CompanyGuard)
   updateCompany(@Param('id') id: string, @Body() companyDto: CompanyUpdateDto): Promise<Company> {
     return this.companyService.updateCompany(+id, companyDto);
@@ -56,15 +48,12 @@ export class CompanyController {
     @Query('limit') limit = 10,
   ): Promise<PaginatedData<Invitation>> {
     return await this.companyService.getCompanyInvitations(+id, page, limit);
-  @UseGuards(AuthGuard('jwt'))
-  getCompanyById(@Param('id') id: string): Promise<Company> {
-    return this.companyService.getCompanyById(+id);
   }
 
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'), CompanyGuard)
-  deleteCompany(@GetUser() user: User, @Param('id') id: string): Promise<void> {
-    return this.companyService.deleteCompany(+id, user);
+  deleteCompany(@Param('id') id: string): Promise<void> {
+    return this.companyService.deleteCompany(+id);
   }
 
   @Delete(':id/exclude-user/:userId')
@@ -77,9 +66,6 @@ export class CompanyController {
   @UseGuards(AuthGuard('jwt'))
   async leaveCompany(@GetUser() user: User, @Param('id') companyId: number): Promise<void> {
     return this.companyService.leaveCompany(+user.id, +companyId);
-  @UseGuards(AuthGuard('jwt'), CompanyGuard)
-  deleteCompany(@Param('id') id: string): Promise<void> {
-    return this.companyService.deleteCompany(+id);
   }
 
   @Get()
