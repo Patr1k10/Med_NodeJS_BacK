@@ -1,4 +1,4 @@
-import {HttpStatus} from "@nestjs/common";
+import { HttpStatus } from '@nestjs/common';
 
 export class ApiResponse<T> {
   status_code: HttpStatus;

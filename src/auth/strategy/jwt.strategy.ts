@@ -4,8 +4,8 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtPayload } from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../../entities/user.entity';
 import { Repository } from 'typeorm';
+import { User } from '../../users/entities/user.entity';
 
 dotenv.config();
 

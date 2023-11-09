@@ -1,19 +1,18 @@
 import { ConflictException, Logger, NotFoundException } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { UsersCreateDto } from './dto/users.create.dto';
 import { UsersUpdateDto } from './dto/users.update.dto';
-import { PaginationService } from '../common/pagination.service';
 import { PaginatedData } from '../types/interface';
+import { User } from './entities/user.entity';
+import { paginate } from '../common/pagination';
 
 export class UsersService {
   private readonly logger: Logger = new Logger(UsersService.name);
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-    private readonly paginationService: PaginationService,
   ) {}
 
   async createUser(userDto: UsersCreateDto): Promise<UsersCreateDto> {
@@ -59,7 +58,7 @@ export class UsersService {
 
   async findAll(page = 1, limit = 10): Promise<PaginatedData<User>> {
     const queryBuilder = this.userRepository.createQueryBuilder('User');
-    return this.paginationService.paginate<User>(this.userRepository, queryBuilder, +page, +limit);
+    return paginate<User>(this.userRepository, queryBuilder, +page, +limit);
   }
 
   private async hashPassword(password: string): Promise<string> {
