@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Column, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Company } from '../../company/entity/company.entity';
+import { InvitationStatus } from '../../types/enums/invitation.status';
 
 @Entity()
 export class Invitation {
@@ -15,6 +16,16 @@ export class Invitation {
 
   @ManyToOne(() => Company, (company) => company.invitations)
   company: Company;
+
+  @Column({ default: false })
+  isRequest: boolean;
+
+  @Column({
+    type: 'enum',
+    enum: InvitationStatus,
+    default: InvitationStatus.SENT,
+  })
+  status: InvitationStatus;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

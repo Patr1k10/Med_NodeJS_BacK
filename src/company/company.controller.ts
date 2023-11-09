@@ -8,6 +8,7 @@ import { CompanyUpdateDto } from './dto /company.update.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { PaginatedData } from '../types/interface';
 import { CompanyGuard } from '../auth/guard/company.guard';
+import { Invitation } from '../invitation/entity/invitation.entity';
 
 @Controller('companies')
 export class CompanyController {
@@ -30,9 +31,27 @@ export class CompanyController {
   }
 
   @Get(':id')
-  @UseGuards(AuthGuard('jwt'), CompanyGuard)
+  @UseGuards(AuthGuard('jwt'))
   getCompanyById(@Param('id') id: string): Promise<Company> {
     return this.companyService.getCompanyById(+id);
+  }
+  @Get(':id/members')
+  @UseGuards(AuthGuard('jwt'))
+  async getCompanyMembers(
+    @Param('id') id: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ): Promise<PaginatedData<User>> {
+    return this.companyService.getCompanyMembers(+id, page, limit);
+  }
+  @Get(':id/invitations')
+  @UseGuards(AuthGuard('jwt'))
+  async getCompanyInvitations(
+    @Param('id') id: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ): Promise<PaginatedData<Invitation>> {
+    return await this.companyService.getCompanyInvitations(+id, page, limit);
   }
 
   @Delete(':id')

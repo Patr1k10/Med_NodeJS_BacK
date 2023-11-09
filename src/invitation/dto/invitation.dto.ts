@@ -1,4 +1,5 @@
-import { IsInt, IsNotEmpty } from 'class-validator';
+import { IsBoolean, IsEnum, IsInt, IsNotEmpty } from 'class-validator';
+import { InvitationStatus } from '../../types/enums/invitation.status';
 
 export class InvitationDto {
   @IsInt()
