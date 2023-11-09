@@ -21,10 +21,10 @@ export class InvitationService {
     private readonly companyRepository: Repository<Company>,
   ) {}
 
-  async sendInvitation(invitationDto: InvitationDto): Promise<Invitation> {
-    const { senderId, receiverId, companyId } = invitationDto;
+  async sendInvitation(invitationDto: InvitationDto, user: User): Promise<Invitation> {
+    const { receiverId, companyId } = invitationDto;
     const sender = await this.userRepository.findOne({
-      where: { id: senderId },
+      where: { id: user.id },
       relations: ['invitedCompanies', 'requestedCompanies'],
     });
     const receiver = await this.userRepository.findOne({
@@ -57,10 +57,10 @@ export class InvitationService {
     return invitation;
   }
 
-  async sendRequest(invitationDto: InvitationDto): Promise<Invitation> {
-    const { senderId, receiverId, companyId } = invitationDto;
+  async sendRequest(invitationDto: InvitationDto, user: User): Promise<Invitation> {
+    const { receiverId, companyId } = invitationDto;
     const sender = await this.userRepository.findOne({
-      where: { id: senderId },
+      where: { id: user.id },
       relations: ['invitedCompanies', 'requestedCompanies'],
     });
     const company = await this.companyRepository.findOne({ where: { id: companyId }, relations: ['owner', 'members'] });
@@ -71,7 +71,7 @@ export class InvitationService {
     if (
       sender.invitedCompanies.some((invitedCompany) => invitedCompany.id === companyId) ||
       sender.requestedCompanies.some((requestedCompany) => requestedCompany.id === companyId) ||
-      company.members.some((member) => member.id === senderId)
+      company.members.some((member) => member.id === user.id)
     ) {
       throw new BadRequestException('Sender is already a member or has already sent requests to this company');
     }
@@ -128,6 +128,9 @@ export class InvitationService {
       this.logger.error(`Invitation with ID ${invitationId} not found`);
       throw new NotFoundException('Invitation not found');
     }
+    if (invitation.status !== InvitationStatus.SENT) {
+      throw new BadRequestException('Invalid invitation status');
+    }
     this.logger.log(`Invitation rejected with ID: ${invitationId}`);
     invitation.status = InvitationStatus.REJECTED;
     await this.companyRepository.save(invitation);
@@ -142,7 +145,7 @@ export class InvitationService {
     await this.invitationRepository.save(invitation);
     this.logger.log(`Invitation soft deleted successfully. ID: ${invitationId}`);
   }
-  async getInvitationsGorUser(userId: number, page: number, limit: number): Promise<PaginatedData<Company>> {
+  async getInvitationsForUser(userId: number, page: number, limit: number): Promise<PaginatedData<Company>> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['invitedCompanies'],

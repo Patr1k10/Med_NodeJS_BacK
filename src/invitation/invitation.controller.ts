@@ -4,45 +4,54 @@ import { InvitationDto } from './dto/invitation.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { PaginatedData } from '../types/interface';
 import { Company } from '../company/entity/company.entity';
+import { GetUser } from '../decorator/getUser.decorator';
+import { User } from '../users/entities/user.entity';
 
 @Controller('invitations')
 export class InvitationController {
   constructor(private readonly invitationService: InvitationService) {}
 
-  @UseGuards(AuthGuard('jwt'))
   @Post('/sendInvitation')
-  async sendInvitation(@Body() invitationDto: InvitationDto): Promise<void> {
-    await this.invitationService.sendInvitation(invitationDto);
-  }
   @UseGuards(AuthGuard('jwt'))
-  @Post('/sendRequest')
-  async senRequest(@Body() invitationDto: InvitationDto): Promise<void> {
-    await this.invitationService.sendRequest(invitationDto);
+  async sendInvitation(@GetUser() user: User, @Body() invitationDto: InvitationDto): Promise<void> {
+    await this.invitationService.sendInvitation(invitationDto, user);
   }
 
+  @Post('/sendRequest')
   @UseGuards(AuthGuard('jwt'))
+  async senRequest(@GetUser() user: User, @Body() invitationDto: InvitationDto): Promise<void> {
+    await this.invitationService.sendRequest(invitationDto, user);
+  }
+
   @Post(':id/accept')
+  @UseGuards(AuthGuard('jwt'))
   async accept(@Param('id') id: string): Promise<void> {
     await this.invitationService.accept(+id);
   }
-  @UseGuards(AuthGuard('jwt'))
+
   @Post(':id/reject')
+  @UseGuards(AuthGuard('jwt'))
   async reject(@Param('id') id: string): Promise<void> {
     await this.invitationService.reject(+id);
   }
+
   @Delete(':id')
+  @UseGuards(AuthGuard('jwt'))
   async softDeleteInvitation(@Param('id') id: string): Promise<void> {
     await this.invitationService.softDeleteInvitation(+id);
   }
+
   @Get(':id/invitations')
-  async getInvitationsGorUser(
+  @UseGuards(AuthGuard('jwt'))
+  async getInvitationsForUser(
     @Param('id') id: string,
     @Query('page') page = 1,
     @Query('limit') limit = 10,
   ): Promise<PaginatedData<Company>> {
-    return await this.invitationService.getInvitationsGorUser(+id, page, limit);
+    return await this.invitationService.getInvitationsForUser(+id, page, limit);
   }
   @Get(':id/invitations')
+  @UseGuards(AuthGuard('jwt'))
   async getRequestedForUser(
     @Param('id') id: string,
     @Query('page') page = 1,
