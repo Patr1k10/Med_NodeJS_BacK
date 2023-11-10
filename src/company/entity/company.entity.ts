@@ -31,6 +31,10 @@ export class Company {
 
   @ManyToMany(() => User, { cascade: true })
   @JoinTable()
+  admins: User[];
+
+  @ManyToMany(() => User, { cascade: true })
+  @JoinTable()
   members: User[];
 
   @OneToMany(() => Invitation, (invitation) => invitation.company)

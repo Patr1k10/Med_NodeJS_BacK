@@ -56,6 +56,24 @@ export class CompanyController {
     return this.companyService.deleteCompany(+id);
   }
 
+  @Patch(':id/add-admin/:userId')
+  @UseGuards(AuthGuard('jwt'), CompanyGuard)
+  async addAdminToCompany(
+    @Param('id') companyId: string,
+    @Param('userId') userId: string,
+  ): Promise<Company> {
+    return this.companyService.addAdminToCompany(+companyId, +userId);
+  }
+
+  @Patch(':id/remove-admin/:userId')
+  @UseGuards(AuthGuard('jwt'), CompanyGuard)
+  async removeAdminFromCompany(
+    @Param('id') companyId: string,
+    @Param('userId') userId: string,
+  ): Promise<Company> {
+    return this.companyService.removeAdminFromCompany(+companyId, +userId);
+  }
+
   @Delete(':id/exclude-user/:userId')
   @UseGuards(AuthGuard('jwt'), CompanyGuard)
   async excludeUserFromCompany(@Param('id') companyId: string, @Param('userId') excludeUserId: string): Promise<void> {
@@ -72,5 +90,10 @@ export class CompanyController {
   @UseGuards(AuthGuard('jwt'))
   getAllCompanies(@Query('page') page = 1, @Query('limit') limit = 10): Promise<PaginatedData<Company>> {
     return this.companyService.findAll(+page, +limit);
+  }
+  @Get(':id/admins')
+  @UseGuards(AuthGuard('jwt'), CompanyGuard)
+  async getCompanyAdmins(@Param('id') id: string): Promise<User[]> {
+    return this.companyService.getCompanyAdmins(+id);
   }
 }
