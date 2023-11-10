@@ -119,12 +119,12 @@ export class CompanyService {
   }
 
   async addAdminToCompany(companyId: number, userId: number): Promise<Company> {
-    const company = await this.companyRepository.findOne({ where: { id: companyId }, relations: ['owner', 'members'] })
+    const company = await this.companyRepository.findOne({ where: { id: companyId }, relations: ['owner', 'members'] });
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user || !company) {
       throw new NotFoundException('User or company not found');
     }
-    const isMember = company.members.some(member => member.id === userId);
+    const isMember = company.members.some((member) => member.id === userId);
     if (!isMember) {
       throw new BadRequestException('User is not a member of the company');
     }
@@ -137,11 +137,11 @@ export class CompanyService {
   }
 
   async removeAdminFromCompany(companyId: number, userId: number): Promise<Company> {
-    const company = await this.companyRepository.findOne({ where: { id: companyId }, relations: ['owner', 'members'] })
+    const company = await this.companyRepository.findOne({ where: { id: companyId }, relations: ['owner', 'members'] });
     if (!company) {
       throw new NotFoundException('Company not found');
     }
-    const isAdmin = company.admins.some(admin => admin.id === userId);
+    const isAdmin = company.admins.some((admin) => admin.id === userId);
     if (!isAdmin) {
       throw new BadRequestException('User is not an admin of the company');
     }
