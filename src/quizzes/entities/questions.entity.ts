@@ -1,5 +1,6 @@
 import { Column, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { Quizzes } from './quizzes.entity';
+import { Quiz } from './quiz.entity';
+
 
 @Entity()
 export class Question {
@@ -15,8 +16,8 @@ export class Question {
   @Column('simple-array')
   correctAnswers: string[];
 
-  @ManyToOne(() => Quizzes, (quizzes) => quizzes.questions)
-  quizzes: Quizzes;
+  @ManyToOne(() => Quiz, (quiz) => quiz.questions)
+  quizzes: Quiz;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

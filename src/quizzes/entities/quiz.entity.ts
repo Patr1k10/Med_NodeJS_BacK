@@ -11,7 +11,7 @@ import { Company } from '../../company/entity/company.entity';
 import { Question } from './questions.entity';
 
 @Entity()
-export class Quizzes {
+export class Quiz {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
