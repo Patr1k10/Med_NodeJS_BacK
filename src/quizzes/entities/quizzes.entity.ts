@@ -21,7 +21,7 @@ export class Quizzes {
   @Column()
   description: string;
 
-  @Column()
+  @Column({ default: 1 })
   frequencyInDays: number;
 
   @ManyToOne(() => Company, (company) => company.quizzes)
