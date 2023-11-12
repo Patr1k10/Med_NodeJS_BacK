@@ -1,7 +1,6 @@
 import { Column, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Quiz } from './quiz.entity';
 
-
 @Entity()
 export class Question {
   @PrimaryGeneratedColumn('increment')

@@ -17,21 +17,16 @@ export class CompanyGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const companyId = request.params.id;
     const user = request.user as User;
-
     const company = await this.companyRepository.findOne({
       where: { id: companyId },
       relations: ['owner', 'admins'],
     });
-
     if (!company) {
       throw new ForbiddenException('Company not found');
     }
-
-
     if (user.id === company.owner.id || (await this.isUserAdmin(user, company.admins))) {
       return true;
     }
-
     throw new UnauthorizedException('Unauthorized');
   }
 
