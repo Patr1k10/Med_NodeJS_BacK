@@ -8,7 +8,7 @@ import { QuizUpdateDto } from './dto/quiz.update.dto';
 import { PaginatedData } from '../types/interface';
 
 @Controller('quizzes')
-// @UseGuards(AuthGuard('jwt'), CompanyGuard)
+@UseGuards(AuthGuard('jwt'), CompanyGuard)
 export class QuizController {
   constructor(private readonly quizService: QuizService) {}
 
