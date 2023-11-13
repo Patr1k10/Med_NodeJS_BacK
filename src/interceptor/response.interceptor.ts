@@ -1,28 +1,15 @@
-import {
-  Injectable,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-  HttpStatus, HttpException,
-} from '@nestjs/common';
-import {map, Observable, throwError} from 'rxjs';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler, HttpStatus, HttpException } from '@nestjs/common';
+import { map, Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import {ApiResponse} from "./api.response.dto";
+import { ApiResponse } from './api.response.dto';
 
 @Injectable()
-export class TransformResponseInterceptor<T>
-  implements NestInterceptor<T, ApiResponse<T>> {
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ): Observable<ApiResponse<T>> {
+export class TransformResponseInterceptor<T> implements NestInterceptor<T, ApiResponse<T>> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<ApiResponse<T>> {
     return next.handle().pipe(
-      catchError(error => {
+      catchError((error) => {
         // Обработка ошибок
-        const status =
-          error instanceof HttpException
-            ? error.getStatus()
-            : HttpStatus.INTERNAL_SERVER_ERROR;
+        const status = error instanceof HttpException ? error.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
         return throwError(() => {
           throw new HttpException(
@@ -35,7 +22,7 @@ export class TransformResponseInterceptor<T>
           );
         });
       }),
-      map(data => {
+      map((data) => {
         return {
           status_code: HttpStatus.OK,
           detail: data,
