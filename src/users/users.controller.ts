@@ -19,7 +19,7 @@ export class UsersController {
   @Patch(':id')
   @UseGuards(AuthGuard('jwt'), AppGuard)
   async updateUser(@Param('id') id: string, @Body() updateUserDto: UsersUpdateDto): Promise<UsersUpdateDto> {
-    return this.usersService.updateUser(Number(id), updateUserDto);
+    return this.usersService.updateUser(+id, updateUserDto);
   }
 
   @Delete(':id')

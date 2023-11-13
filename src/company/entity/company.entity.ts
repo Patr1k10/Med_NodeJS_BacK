@@ -1,5 +1,16 @@
-import { Column, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { Invitation } from '../../invitation/entity/invitation.entity';
 
 @Entity()
 export class Company {
@@ -17,6 +28,17 @@ export class Company {
 
   @ManyToOne(() => User, (user) => user.companies)
   owner: User;
+
+  @ManyToMany(() => User, { cascade: true })
+  @JoinTable()
+  admins: User[];
+
+  @ManyToMany(() => User, { cascade: true })
+  @JoinTable()
+  members: User[];
+
+  @OneToMany(() => Invitation, (invitation) => invitation.company)
+  invitations: Invitation[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

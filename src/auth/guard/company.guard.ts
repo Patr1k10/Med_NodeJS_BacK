@@ -7,6 +7,8 @@ import { Company } from '../../company/entity/company.entity';
 @Injectable()
 export class CompanyGuard implements CanActivate {
   constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     @InjectRepository(Company)
     private readonly companyRepository: Repository<Company>,
   ) {}

@@ -8,6 +8,7 @@ import { CompanyUpdateDto } from './dto /company.update.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { PaginatedData } from '../types/interface';
 import { CompanyGuard } from '../auth/guard/company.guard';
+import { Invitation } from '../invitation/entity/invitation.entity';
 
 @Controller('companies')
 export class CompanyController {
@@ -30,6 +31,24 @@ export class CompanyController {
   getCompanyById(@Param('id') id: string): Promise<Company> {
     return this.companyService.getCompanyById(+id);
   }
+  @Get(':id/members')
+  @UseGuards(AuthGuard('jwt'))
+  async getCompanyMembers(
+    @Param('id') id: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ): Promise<PaginatedData<User>> {
+    return this.companyService.getCompanyMembers(+id, page, limit);
+  }
+  @Get(':id/invitations')
+  @UseGuards(AuthGuard('jwt'))
+  async getCompanyInvitations(
+    @Param('id') id: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ): Promise<PaginatedData<Invitation>> {
+    return await this.companyService.getCompanyInvitations(+id, page, limit);
+  }
 
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'), CompanyGuard)
@@ -37,9 +56,44 @@ export class CompanyController {
     return this.companyService.deleteCompany(+id);
   }
 
+  @Patch(':id/add-admin/:userId')
+  @UseGuards(AuthGuard('jwt'), CompanyGuard)
+  async addAdminToCompany(
+    @Param('id') companyId: string,
+    @Param('userId') userId: string,
+  ): Promise<Company> {
+    return this.companyService.addAdminToCompany(+companyId, +userId);
+  }
+
+  @Patch(':id/remove-admin/:userId')
+  @UseGuards(AuthGuard('jwt'), CompanyGuard)
+  async removeAdminFromCompany(
+    @Param('id') companyId: string,
+    @Param('userId') userId: string,
+  ): Promise<Company> {
+    return this.companyService.removeAdminFromCompany(+companyId, +userId);
+  }
+
+  @Delete(':id/exclude-user/:userId')
+  @UseGuards(AuthGuard('jwt'), CompanyGuard)
+  async excludeUserFromCompany(@Param('id') companyId: string, @Param('userId') excludeUserId: string): Promise<void> {
+    return this.companyService.excludeUserFromCompany(+excludeUserId, +companyId);
+  }
+
+  @Delete(':id/leave')
+  @UseGuards(AuthGuard('jwt'))
+  async leaveCompany(@GetUser() user: User, @Param('id') companyId: number): Promise<void> {
+    return this.companyService.leaveCompany(+user.id, +companyId);
+  }
+
   @Get()
   @UseGuards(AuthGuard('jwt'))
   getAllCompanies(@Query('page') page = 1, @Query('limit') limit = 10): Promise<PaginatedData<Company>> {
     return this.companyService.findAll(+page, +limit);
+  }
+  @Get(':id/admins')
+  @UseGuards(AuthGuard('jwt'), CompanyGuard)
+  async getCompanyAdmins(@Param('id') id: string): Promise<User[]> {
+    return this.companyService.getCompanyAdmins(+id);
   }
 }
