@@ -37,4 +37,17 @@ export class UsersController {
   async findAll(@Query('page') page = 1, @Query('limit') limit = 10): Promise<PaginatedData<User>> {
     return this.usersService.findAll(+page, +limit);
   }
+
+  @Get(':userId/average-score')
+  async getUserAverageScore(@Param('userId') userId: number): Promise<number> {
+    return await this.usersService.calculateUserAverageRating(userId);
+  }
+
+  @Get(':userId/company/:companyId/average-score')
+  async getUserCompanyAverageScore(
+    @Param('userId') userId: number,
+    @Param('companyId') companyId: number,
+  ): Promise<number> {
+    return this.usersService.calculateUserAverageRating(userId, companyId);
+  }
 }

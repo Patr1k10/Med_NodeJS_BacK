@@ -71,4 +71,24 @@ export class UsersService {
       throw error;
     }
   }
+
+  async calculateUserAverageRating(userId: number, companyId?: number): Promise<number> {
+    const user = await this.userRepository.findOne({ where: { id: userId }, relations: ['quizResults'] });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    let quizResultsToCalculate = user.quizResults;
+    if (companyId !== undefined) {
+      quizResultsToCalculate = user.quizResults.filter((quizResult) => quizResult.quiz.company.id === companyId);
+    }
+    const totalQuestionsAnswered = quizResultsToCalculate.reduce(
+      (total, quizResult) => total + quizResult.totalQuestionsAnswered,
+      0,
+    );
+    const totalCorrectAnswers = quizResultsToCalculate.reduce(
+      (total, quizResult) => total + quizResult.totalCorrectAnswers,
+      0,
+    );
+    return totalQuestionsAnswered > 0 ? totalCorrectAnswers / totalQuestionsAnswered : 0;
+  }
 }

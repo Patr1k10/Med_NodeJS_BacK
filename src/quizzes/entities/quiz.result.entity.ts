@@ -1,22 +1,29 @@
 import { Column, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { User } from '../../users/entities/user.entity';
 import { Quiz } from './quiz.entity';
 
 @Entity()
-export class Question {
+export class QuizResult {
   @PrimaryGeneratedColumn('increment')
   id: number;
 
-  @Column()
-  question: string;
+  @ManyToOne(() => User, (user) => user.quizResults)
+  user: User;
 
-  @Column('simple-array')
-  answerOptions: string[];
-
-  @Column('simple-array')
-  correctAnswers: string[];
-
-  @ManyToOne(() => Quiz, (quiz) => quiz.questions)
+  @ManyToOne(() => Quiz, (quiz) => quiz.quizResults)
   quiz: Quiz;
+
+  @Column('simple-array')
+  userAnswers: string[];
+
+  @Column({ default: 0 })
+  totalQuestionsAnswered: number;
+
+  @Column({ default: 0 })
+  totalCorrectAnswers: number;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  completionTime: Date;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

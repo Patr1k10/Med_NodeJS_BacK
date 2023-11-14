@@ -2,13 +2,15 @@ import {
   Column,
   DeleteDateColumn,
   Entity,
-  JoinTable, ManyToMany,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { UserRole } from '../../types/enums/user.role';
 import { Company } from '../../company/entity/company.entity';
+import { QuizResult } from '../../quizzes/entities/quiz.result.entity';
 
 @Entity()
 export class User {
@@ -47,6 +49,9 @@ export class User {
   @ManyToMany(() => Company, { cascade: true })
   @JoinTable()
   requestedCompanies: Company[];
+
+  @OneToMany(() => QuizResult, (quizResult) => quizResult.user, { cascade: true })
+  quizResults: QuizResult[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
