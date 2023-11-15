@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Invitation } from '../../invitation/entity/invitation.entity';
+import { Quiz } from '../../quizzes/entities/quiz.entity';
 
 @Entity()
 export class Company {
@@ -39,6 +40,9 @@ export class Company {
 
   @OneToMany(() => Invitation, (invitation) => invitation.company)
   invitations: Invitation[];
+
+  @OneToMany(() => Quiz, (quiz) => quiz.company, { cascade: true })
+  quizzes: Quiz[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

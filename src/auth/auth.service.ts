@@ -8,11 +8,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { JwtPayload } from 'jsonwebtoken';
 import { User } from '../users/entities/user.entity';
 import { Auth } from './entities/auth.entity';
+import { ConfigService } from '@nestjs/config';
+import { TokenResponse } from '../types/interface';
 
 @Injectable()
 export class AuthService {
   private readonly logger: Logger = new Logger(AuthController.name);
   constructor(
+    private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -20,58 +23,64 @@ export class AuthService {
     private readonly authRepository: Repository<Auth>,
   ) {}
 
-  async login(userDto: UsersAuthDto): Promise<{ accessToken: string; refreshToken: string; actionToken: string }> {
+  async login(userDto: UsersAuthDto): Promise<TokenResponse> {
     const user = await this.validateUser(userDto.email, userDto.password);
     let auth = await this.authRepository.findOne({ where: { userEmail: user.email } });
     if (!auth) {
-      const { accessToken, refreshToken, actionToken } = await this.generateTokens(user.email);
+      const { newAccessToken, newRefreshToken, newActionToken } = await this.generateTokens(user.email);
       auth = this.authRepository.create({
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        actionToken: actionToken,
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+        actionToken: newActionToken,
         userEmail: user.email,
       });
     } else {
-      const { accessToken, refreshToken, actionToken } = await this.generateTokens(user.email);
-      auth.accessToken = accessToken;
-      auth.refreshToken = refreshToken;
-      auth.actionToken = actionToken;
+      const { newAccessToken, newRefreshToken, newActionToken } = await this.generateTokens(user.email);
+      auth.accessToken = newAccessToken;
+      auth.refreshToken = newRefreshToken;
+      auth.actionToken = newActionToken;
     }
     await this.authRepository.save(auth);
     this.logger.log(`User logged in: ${user.email}`);
     return this.generateTokens(user.email);
   }
 
-  async loginAuth0(email: string): Promise<{ accessToken: string; refreshToken: string; actionToken: string }> {
+  async loginAuth0(email: string): Promise<TokenResponse> {
     let auth = await this.authRepository.findOne({ where: { userEmail: email } });
     if (!auth) {
-      const { accessToken, refreshToken, actionToken } = await this.generateTokens(email);
+      const { newAccessToken, newRefreshToken, newActionToken } = await this.generateTokens(email);
       auth = this.authRepository.create({
-        accessToken: accessToken,
-        refreshToken: refreshToken,
-        actionToken: actionToken,
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+        actionToken: newActionToken,
         userEmail: email,
       });
     } else {
-      const { accessToken, refreshToken, actionToken } = await this.generateTokens(email);
-      auth.accessToken = accessToken;
-      auth.refreshToken = refreshToken;
-      auth.actionToken = actionToken;
+      const { newAccessToken, newRefreshToken, newActionToken } = await this.generateTokens(email);
+      auth.accessToken = newAccessToken;
+      auth.refreshToken = newRefreshToken;
+      auth.actionToken = newActionToken;
     }
     await this.authRepository.save(auth);
     this.logger.log(`User logged in: ${email}`);
     return this.generateTokens(email);
   }
 
-  private async generateTokens(
-    email: string,
-  ): Promise<{ accessToken: string; refreshToken: string; actionToken: string }> {
+  private async generateTokens(email: string): Promise<TokenResponse> {
     const payload = { userEmail: email };
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '24h' });
-    const actionToken = this.jwtService.sign(payload, { expiresIn: '1h' });
-
-    return { accessToken: accessToken, refreshToken: refreshToken, actionToken: actionToken };
+    const newAccessToken = this.jwtService.sign(payload, {
+      expiresIn: '1h',
+      secret: this.configService.get<string>('SECRET_ACCESS'),
+    });
+    const newRefreshToken = this.jwtService.sign(payload, {
+      expiresIn: '24h',
+      secret: this.configService.get<string>('SECRET_REFRESH'),
+    });
+    const newActionToken = this.jwtService.sign(payload, {
+      expiresIn: '1h',
+      secret: this.configService.get<string>('SECRET_ACTION'),
+    });
+    return { newAccessToken, newRefreshToken, newActionToken };
   }
 
   private async comparePasswords(password: string, userPasswordHash: string): Promise<boolean> {
@@ -104,16 +113,18 @@ export class AuthService {
     }
   }
 
-  async refreshTokens(refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
+  async refreshTokens(refreshToken: string): Promise<TokenResponse> {
     try {
       const payload: JwtPayload = this.jwtService.verify(refreshToken);
       const { userEmail } = payload;
       const user = await this.userRepository.findOne({ where: { email: userEmail } });
       if (user) {
-        const newAccessToken = this.jwtService.sign({ userEmail });
-        const newRefreshToken = this.jwtService.sign({ userEmail }, { expiresIn: '24h' });
-        await this.authRepository.update({ userEmail }, { refreshToken: newRefreshToken });
-        return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+        const { newAccessToken, newRefreshToken, newActionToken } = await this.generateTokens(userEmail);
+        await this.authRepository.update(
+          { userEmail },
+          { accessToken: newAccessToken, refreshToken: newRefreshToken, actionToken: newActionToken },
+        );
+        return { newAccessToken, newRefreshToken, newActionToken };
       }
     } catch (error) {
       this.logger.error(`Error refreshing tokens: ${error.message}`);

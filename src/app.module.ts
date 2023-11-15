@@ -9,6 +9,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { PassportModule } from '@nestjs/passport';
 import { CompanyModule } from './company/company.module';
 import { InvitationModule } from './invitation/invitation.module';
+import { QuizModule } from './quizzes/quiz.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { InvitationModule } from './invitation/invitation.module';
     UsersModule,
     AuthModule,
     InvitationModule,
+    QuizModule,
   ],
   controllers: [HealthController],
   providers: [
