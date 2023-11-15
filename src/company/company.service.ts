@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException} from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Company } from './entity/company.entity';
@@ -116,5 +116,44 @@ export class CompanyService {
       this.logger.error(`Failed to get invitations for company with ID ${companyId}: ${error.message}`);
       throw new NotFoundException('Failed to retrieve invitations');
     }
+  }
+
+  async addAdminToCompany(companyId: number, userId: number): Promise<Company> {
+    const company = await this.companyRepository.findOne({ where: { id: companyId }, relations: ['owner', 'members'] });
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user || !company) {
+      throw new NotFoundException('User or company not found');
+    }
+    const isMember = company.members.some((member) => member.id === userId);
+    if (!isMember) {
+      throw new BadRequestException('User is not a member of the company');
+    }
+    if (!company.admins) {
+      company.admins = [];
+    }
+    company.admins.push(user);
+    await this.companyRepository.save(company);
+    return company;
+  }
+
+  async removeAdminFromCompany(companyId: number, userId: number): Promise<Company> {
+    const company = await this.companyRepository.findOne({ where: { id: companyId }, relations: ['owner', 'members'] });
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+    const isAdmin = company.admins.some((admin) => admin.id === userId);
+    if (!isAdmin) {
+      throw new BadRequestException('User is not an admin of the company');
+    }
+    company.admins = company.admins.filter((admin) => admin.id !== userId);
+    await this.companyRepository.save(company);
+    return company;
+  }
+  async getCompanyAdmins(companyId: number): Promise<User[]> {
+    const company = await this.getCompanyById(companyId);
+    if (!company) {
+      throw new NotFoundException('Company not found');
+    }
+    return company.admins;
   }
 }

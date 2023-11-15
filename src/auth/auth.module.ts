@@ -9,8 +9,6 @@ import { Auth0Strategy } from './strategy/auth0.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { User } from '../users/entities/user.entity';
 import { Auth } from './entities/auth.entity';
-import { Company } from '../company/entity/company.entity';
-import { AppGuard } from './guard/app.guard';
 
 dotenv.config();
 
@@ -19,7 +17,7 @@ dotenv.config();
     PassportModule.register({ defaultStrategy: 'jwt' }),
     TypeOrmModule.forFeature([User, Auth]),
     JwtModule.register({
-      secret: process.env.SECRET_KEY,
+      secret: process.env.SECRET_ACCSESS,
       signOptions: { expiresIn: '12h' },
     }),
   ],

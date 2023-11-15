@@ -97,7 +97,7 @@ export class InvitationService {
       this.logger.error(`Invitation with ID ${invitationId} not found`);
       throw new NotFoundException('Invitation not found');
     }
-    if (invitation.status !== InvitationStatus.ACCEPTED) {
+    if (invitation.status !== InvitationStatus.SENT) {
       throw new BadRequestException('Invalid invitation status');
     }
     if (invitation.isRequest === true) {
