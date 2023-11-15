@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Company } from '../company/entity/company.entity';
@@ -10,11 +10,14 @@ import { paginate } from '../common/pagination';
 import { PaginatedData } from '../types/interface';
 import { QuizResult } from './entities/quiz.result.entity';
 import { User } from '../users/entities/user.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class QuizService {
   private readonly logger: Logger = new Logger(QuizService.name);
   constructor(
+    @Inject(CACHE_MANAGER) private readonly cache: Cache,
     @InjectRepository(QuizResult)
     private readonly quizResultRepository: Repository<QuizResult>,
     @InjectRepository(Quiz)
@@ -118,6 +121,7 @@ export class QuizService {
       completionTime: new Date(),
     });
     this.logger.log(`Quiz result submitted for User ${user.id}, Quiz ${quiz.id}`);
+    await this.cache.set(`quizResult:${user.id}`, quizResult);
     return await this.quizResultRepository.save(quizResult);
   }
 

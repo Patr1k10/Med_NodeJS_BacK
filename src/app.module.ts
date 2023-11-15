@@ -1,7 +1,7 @@
 import { Logger, Module } from '@nestjs/common';
 import { HealthController } from './health.controller';
 import { DatabaseModule } from './db/database.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { TransformResponseInterceptor } from './interceptor/response.interceptor';
@@ -10,6 +10,7 @@ import { PassportModule } from '@nestjs/passport';
 import { CompanyModule } from './company/company.module';
 import { InvitationModule } from './invitation/invitation.module';
 import { QuizModule } from './quizzes/quiz.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { QuizModule } from './quizzes/quiz.module';
     AuthModule,
     InvitationModule,
     QuizModule,
+    RedisModule,
   ],
   controllers: [HealthController],
   providers: [
