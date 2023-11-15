@@ -80,7 +80,6 @@ export class AuthService {
       expiresIn: '1h',
       secret: this.configService.get<string>('SECRET_ACTION'),
     });
-
     return { newAccessToken, newRefreshToken, newActionToken };
   }
 
