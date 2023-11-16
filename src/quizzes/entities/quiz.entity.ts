@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Company } from '../../company/entity/company.entity';
 import { Question } from './questions.entity';
+import { QuizResult } from './quiz.result.entity';
 
 @Entity()
 export class Quiz {
@@ -27,8 +28,11 @@ export class Quiz {
   @ManyToOne(() => Company, (company) => company.quizzes)
   company: Company;
 
-  @OneToMany(() => Question, (question) => question.quizzes, { cascade: true })
+  @OneToMany(() => Question, (question) => question.quiz, { cascade: true })
   questions: Question[];
+
+  @OneToMany(() => QuizResult, (quizResult) => quizResult.quiz, { cascade: true })
+  quizResults: QuizResult[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

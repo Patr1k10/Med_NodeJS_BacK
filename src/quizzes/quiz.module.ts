@@ -6,9 +6,10 @@ import { Invitation } from '../invitation/entity/invitation.entity';
 import { QuizService } from './quiz.service';
 import { QuizController } from './quiz.controller';
 import { Quiz } from './entities/quiz.entity';
+import { QuizResult } from './entities/quiz.result.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Company, Invitation, Quiz])],
+  imports: [TypeOrmModule.forFeature([User, Company, Invitation, Quiz, QuizResult])],
   controllers: [QuizController],
   providers: [QuizService],
 })
