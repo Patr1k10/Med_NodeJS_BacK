@@ -11,6 +11,8 @@ services:
     container_name: nest-app
     ports:
       - 3000:3000
+    env_file:
+      - .env
     environment:
       - DB_TYPE=postgres
       - PG_HOST=db
@@ -20,6 +22,13 @@ services:
       - PG_PORT=5432
     depends_on:
       - db
+  redis:
+    image: redis
+    command: /bin/sh -c "redis-server --requirepass password"
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis/data:/data
   db:
     container_name: db
     image: postgres:12
