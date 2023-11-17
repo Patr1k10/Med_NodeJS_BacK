@@ -12,7 +12,7 @@ import { Invitation } from '../invitation/entity/invitation.entity';
 import { Response } from 'express';
 import { FileType } from '../types/enums/file.type';
 
-@UseGuards(AuthGuard('jwt'), CompanyGuard)
+// @UseGuards(AuthGuard('jwt'), CompanyGuard)
 @Controller('companies')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
@@ -84,7 +84,7 @@ export class CompanyController {
 
   @Get(':companyId/export-all-data/:fileType')
   async exportCompanyAllData(
-    @Param('id') companyId: string,
+    @Param('companyId') companyId: string,
     @Param('fileType') fileType: FileType,
     @Res() response: Response,
   ): Promise<void> {
@@ -93,7 +93,7 @@ export class CompanyController {
 
   @Get(':companyId/export-user-data/:userId/:fileType')
   async exportCompanyUserData(
-    @Param('id') companyId: string,
+    @Param('companyId') companyId: string,
     @Param('userId') userId: string,
     @Param('fileType') fileType: FileType,
     @Res() response: Response,

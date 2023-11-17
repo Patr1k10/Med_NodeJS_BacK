@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import * as json2csv from 'json2csv';
 import { Cache } from 'cache-manager';
 import { QuizResult } from '../quizzes/entities/quiz.result.entity';
@@ -18,13 +18,14 @@ export class ExportService {
 
   async exportToCsv(response: Response, companyId?: number, quizId?: number, userId?: number): Promise<void> {
     const results = await this.getResultsFromCache(companyId, quizId, userId);
-    const csvResult = json2csv.parse(results, { header: true });
+    const csvResult = json2csv.parse(results);
     response.attachment('exported_data.csv');
     response.status(200).send(csvResult);
   }
 
-  private async getResultsFromCache(companyId?: number, quizId?: number, userId?: number): Promise<QuizResult[]> {
+  private async getResultsFromCache(companyId?: number, quizId?: number, userId?: number): Promise<any> {
     let cacheKeyPrefix = 'quizResult';
+
     if (companyId !== undefined) {
       cacheKeyPrefix += `:${companyId}`;
     }
@@ -34,11 +35,19 @@ export class ExportService {
     if (userId !== undefined) {
       cacheKeyPrefix += `:${userId}`;
     }
-    const cacheKey = cacheKeyPrefix;
-    const cachedData = await this.cache.get(cacheKey);
-    if (!cachedData) {
-      throw new Error('Data not found in cache');
+    if (companyId === undefined && quizId === undefined && userId === undefined) {
+      throw new Error('At least one of companyId, quizId, or userId must be provided for cache retrieval.');
     }
-    return Array.isArray(cachedData) ? cachedData : [cachedData];
+
+    const cacheKey = cacheKeyPrefix;
+    console.log(cacheKey);
+    const keys = await this.cache.store.keys(`${cacheKey}*`);
+    const values = await this.cache.store.mget(...keys);
+
+    if (!values || values.length === 0) {
+      throw new NotFoundException('Data not found in cache');
+    }
+
+    return Array.isArray(values) ? values : [values];
   }
 }

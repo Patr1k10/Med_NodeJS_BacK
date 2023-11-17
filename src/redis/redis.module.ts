@@ -18,5 +18,6 @@ import { ExportService } from './export.service';
     }),
   ],
   providers: [ExportService],
+  exports: [ExportService],
 })
 export class RedisModule {}
