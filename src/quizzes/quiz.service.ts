@@ -121,7 +121,7 @@ export class QuizService {
       completionTime: new Date(),
     });
     this.logger.log(`Quiz result submitted for User ${user.id}, Quiz ${quiz.id}`);
-    await this.cache.set(`quizResult:${user.id}`, quizResult);
+    await this.cache.set(`quizResult:${quiz.company.id}:${quiz.id}:${user.id}`, quizResult);
     return await this.quizResultRepository.save(quizResult);
   }
 
