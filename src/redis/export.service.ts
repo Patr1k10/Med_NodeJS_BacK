@@ -28,15 +28,18 @@ export class ExportService {
 
     if (companyId !== undefined) {
       cacheKeyPrefix += `:${companyId}`;
+    } else {
+      cacheKeyPrefix += ':*';
     }
-    if (quizId !== undefined) {
-      cacheKeyPrefix += `:${quizId}`;
-    }
-    if (userId !== undefined) {
-      cacheKeyPrefix += `:${userId}`;
-    }
-    if (companyId === undefined && quizId === undefined && userId === undefined) {
-      throw new Error('At least one of companyId, quizId, or userId must be provided for cache retrieval.');
+
+    if (quizId !== undefined && userId !== undefined) {
+      cacheKeyPrefix += `:${quizId}:${userId}`;
+    } else if (quizId !== undefined) {
+      cacheKeyPrefix += `:${quizId}:*`;
+    } else if (userId !== undefined) {
+      cacheKeyPrefix += `:*:${userId}`;
+    } else {
+      throw new Error('At least quizId or userId must be provided for cache retrieval.');
     }
 
     const cacheKey = cacheKeyPrefix;
