@@ -52,7 +52,7 @@ export class UsersController {
   ): Promise<number> {
     return this.usersService.calculateUserAverageRating(userId, companyId);
   }
-
+  @UseGuards(AuthGuard('jwt'))
   @Get('quiz-results/export/:fileType')
   async exportUserQuizResults(
     @GetUser() user: User,

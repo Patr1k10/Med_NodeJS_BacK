@@ -1,7 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import * as json2csv from 'json2csv';
 import { Cache } from 'cache-manager';
-import { QuizResult } from '../quizzes/entities/quiz.result.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Response } from 'express';
 
@@ -24,6 +23,9 @@ export class ExportService {
   }
 
   private async getResultsFromCache(companyId?: number, quizId?: number, userId?: number): Promise<any> {
+    if (companyId === undefined && quizId === undefined && userId === undefined) {
+      throw new NotFoundException('At least one of companyId, quizId, or userId must be provided');
+    }
     let cacheKeyPrefix = 'quizResult';
 
     if (companyId !== undefined) {
@@ -31,20 +33,16 @@ export class ExportService {
     } else {
       cacheKeyPrefix += ':*';
     }
-
     if (quizId !== undefined && userId !== undefined) {
       cacheKeyPrefix += `:${quizId}:${userId}`;
     } else if (quizId !== undefined) {
       cacheKeyPrefix += `:${quizId}:*`;
     } else if (userId !== undefined) {
-      cacheKeyPrefix += `:*:${userId}`;
-    } else {
-      throw new Error('At least quizId or userId must be provided for cache retrieval.');
+      cacheKeyPrefix += `:*:${userId}:*`;
     }
 
     const cacheKey = cacheKeyPrefix;
-    console.log(cacheKey);
-    const keys = await this.cache.store.keys(`${cacheKey}*`);
+    const keys = await this.cache.store.keys(`${cacheKey}`);
     const values = await this.cache.store.mget(...keys);
 
     if (!values || values.length === 0) {

@@ -100,4 +100,13 @@ export class CompanyController {
   ): Promise<void> {
     return this.companyService.exportCompanyUserData(+companyId, +userId, fileType, response);
   }
+
+  @Get(':quizId/export-quiz-data/:fileType')
+  async exportCompanyQuizData(
+    @Param('quizId') quizId: string,
+    @Param('fileType') fileType: FileType,
+    @Res() response: Response,
+  ): Promise<void> {
+    return this.companyService.exportCompanyQuizData(+quizId, fileType, response);
+  }
 }

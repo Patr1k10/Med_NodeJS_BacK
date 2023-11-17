@@ -166,12 +166,25 @@ export class CompanyService {
     fileType: FileType,
     response: Response,
   ): Promise<void> {
+    if (!companyId || !userId) {
+      throw new BadRequestException('Invalid company or user ID');
+    }
     const exportMethod = fileType === FileType.CSV ? this.exportService.exportToCsv : this.exportService.exportToJson;
     await exportMethod.call(this.exportService, response, companyId, userId);
   }
 
   async exportCompanyAllData(companyId: number, fileType: FileType, response: Response): Promise<void> {
+    if (!companyId) {
+      throw new BadRequestException('Invalid company ID');
+    }
     const exportMethod = fileType === FileType.CSV ? this.exportService.exportToCsv : this.exportService.exportToJson;
     await exportMethod.call(this.exportService, response, companyId);
+  }
+  async exportCompanyQuizData(quizId: number, fileType: FileType, response: Response): Promise<void> {
+    if (!quizId) {
+      throw new BadRequestException('Invalid quiz ID');
+    }
+    const exportMethod = fileType === FileType.CSV ? this.exportService.exportToCsv : this.exportService.exportToJson;
+    await exportMethod.call(this.exportService, response, undefined, quizId);
   }
 }
