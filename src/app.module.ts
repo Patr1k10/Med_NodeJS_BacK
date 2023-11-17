@@ -12,6 +12,7 @@ import { InvitationModule } from './invitation/invitation.module';
 import { QuizModule } from './quizzes/quiz.module';
 import { RedisModule } from './redis/redis.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     QuizModule,
     RedisModule,
     AnalyticsModule,
+    NotificationsModule,
   ],
   controllers: [HealthController],
   providers: [
