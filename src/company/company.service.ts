@@ -11,7 +11,6 @@ import { PaginatedData } from '../types/interface';
 import { Invitation } from '../invitation/entity/invitation.entity';
 import { ExportService } from '../redis/export.service';
 import { FileType } from '../types/enums/file.type';
-import * as fs from 'fs';
 
 @Injectable()
 export class CompanyService {
@@ -168,7 +167,7 @@ export class CompanyService {
     response: Response,
   ): Promise<void> {
     const exportMethod = fileType === FileType.CSV ? this.exportService.exportToCsv : this.exportService.exportToJson;
-    await exportMethod.call(this.exportService, response, companyId, null, userId);
+    await exportMethod.call(this.exportService, response, companyId, userId);
   }
 
   async exportCompanyAllData(companyId: number, fileType: FileType, response: Response): Promise<void> {
