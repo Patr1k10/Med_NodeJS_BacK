@@ -12,7 +12,7 @@ import { Invitation } from '../invitation/entity/invitation.entity';
 import { Response } from 'express';
 import { FileType } from '../types/enums/file.type';
 
-// @UseGuards(AuthGuard('jwt'), CompanyGuard)
+@UseGuards(AuthGuard('jwt'), CompanyGuard)
 @Controller('companies')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
