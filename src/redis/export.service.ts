@@ -1,24 +1,26 @@
 import { Inject, Injectable } from '@nestjs/common';
-import * as fs from 'fs';
 import * as json2csv from 'json2csv';
 import { Cache } from 'cache-manager';
 import { QuizResult } from '../quizzes/entities/quiz.result.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Response } from 'express';
 
 @Injectable()
 export class ExportService {
   constructor(@Inject(CACHE_MANAGER) private readonly cache: Cache) {}
 
-  async exportToJson(companyId?: number, quizId?: number, userId?: number): Promise<void> {
+  async exportToJson(response: Response, companyId?: number, quizId?: number, userId?: number): Promise<void> {
     const results = await this.getResultsFromCache(companyId, quizId, userId);
     const jsonResult = JSON.stringify(results, null, 2);
-    fs.writeFileSync('exported_data.json', jsonResult);
+    response.attachment('exported_data.json');
+    response.status(200).send(jsonResult);
   }
 
-  async exportToCsv(companyId?: number, quizId?: number, userId?: number): Promise<void> {
+  async exportToCsv(response: Response, companyId?: number, quizId?: number, userId?: number): Promise<void> {
     const results = await this.getResultsFromCache(companyId, quizId, userId);
     const csvResult = json2csv.parse(results, { header: true });
-    fs.writeFileSync('exported_data.csv', csvResult);
+    response.attachment('exported_data.csv');
+    response.status(200).send(csvResult);
   }
 
   private async getResultsFromCache(companyId?: number, quizId?: number, userId?: number): Promise<QuizResult[]> {
