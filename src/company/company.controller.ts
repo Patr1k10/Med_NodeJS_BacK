@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { Company } from './entity/company.entity';
 import { GetUser } from '../decorator/getUser.decorator';
@@ -9,6 +9,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { PaginatedData } from '../types/interface';
 import { CompanyGuard } from '../auth/guard/company.guard';
 import { Invitation } from '../invitation/entity/invitation.entity';
+import { Response } from 'express';
+import { FileType } from '../types/enums/file.type';
 
 @UseGuards(AuthGuard('jwt'), CompanyGuard)
 @Controller('companies')
@@ -78,5 +80,33 @@ export class CompanyController {
   @Get(':id/admins')
   async getCompanyAdmins(@Param('id') id: string): Promise<User[]> {
     return this.companyService.getCompanyAdmins(+id);
+  }
+
+  @Get(':companyId/export-all-data/:fileType')
+  async exportCompanyAllData(
+    @Param('companyId') companyId: string,
+    @Param('fileType') fileType: FileType,
+    @Res() response: Response,
+  ): Promise<void> {
+    return this.companyService.exportCompanyAllData(+companyId, fileType, response);
+  }
+
+  @Get(':companyId/export-user-data/:userId/:fileType')
+  async exportCompanyUserData(
+    @Param('companyId') companyId: string,
+    @Param('userId') userId: string,
+    @Param('fileType') fileType: FileType,
+    @Res() response: Response,
+  ): Promise<void> {
+    return this.companyService.exportCompanyUserData(+companyId, +userId, fileType, response);
+  }
+
+  @Get(':quizId/export-quiz-data/:fileType')
+  async exportCompanyQuizData(
+    @Param('quizId') quizId: string,
+    @Param('fileType') fileType: FileType,
+    @Res() response: Response,
+  ): Promise<void> {
+    return this.companyService.exportCompanyQuizData(+quizId, fileType, response);
   }
 }

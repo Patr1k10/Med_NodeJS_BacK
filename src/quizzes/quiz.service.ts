@@ -1,4 +1,4 @@
-import { ConflictException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Company } from '../company/entity/company.entity';
@@ -88,7 +88,7 @@ export class QuizService {
 
   async submitQuizResult(userId: number, quizId: number, userAnswers: string[]): Promise<QuizResult> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
-    const quiz = await this.quizRepository.findOne({ where: { id: quizId }, relations: [`questions`] });
+    const quiz = await this.quizRepository.findOne({ where: { id: quizId }, relations: [`questions`, `company`] });
     this.logger.log(` ${userId} ${quizId}`);
     if (!user) {
       throw new NotFoundException('User not found');
@@ -96,20 +96,20 @@ export class QuizService {
     if (!quiz) {
       throw new NotFoundException('Quiz not found');
     }
-    const lastQuizResult = await this.quizResultRepository.findOne({
-      where: { user: { id: user.id }, quiz: { id: quiz.id } },
-      order: { completionTime: 'DESC' },
-    });
-
-    if (lastQuizResult) {
-      const daysSinceLastQuiz = Math.floor(
-        (new Date().getTime() - lastQuizResult.completionTime.getTime()) / (1000 * 60 * 60 * 24),
-      );
-      if (daysSinceLastQuiz < quiz.frequencyInDays) {
-        this.logger.error(`User ${user.id} already completed this quiz within the last ${quiz.frequencyInDays} days`);
-        throw new ConflictException(`User already completed this quiz within the last ${quiz.frequencyInDays} days`);
-      }
-    }
+    // const lastQuizResult = await this.quizResultRepository.findOne({
+    //   where: { user: { id: user.id }, quiz: { id: quiz.id } },
+    //   order: { completionTime: 'DESC' },
+    // });
+    //
+    // if (lastQuizResult) {
+    //   const daysSinceLastQuiz = Math.floor(
+    //     (new Date().getTime() - lastQuizResult.completionTime.getTime()) / (1000 * 60 * 60 * 24),
+    //   );
+    //   if (daysSinceLastQuiz < quiz.frequencyInDays) {
+    //     this.logger.error(`User ${user.id} already completed this quiz within the last ${quiz.frequencyInDays} days`);
+    //     throw new ConflictException(`User already completed this quiz within the last ${quiz.frequencyInDays} days`);
+    //   }
+    // }
     const totalQuestionsAnswered = userAnswers.length;
     const totalCorrectAnswers = await this.calculateCorrectAnswers(userAnswers, quiz.questions);
     const quizResult = this.quizResultRepository.create({
@@ -120,9 +120,10 @@ export class QuizService {
       totalCorrectAnswers,
       completionTime: new Date(),
     });
+    const savedQuizResult = await this.quizResultRepository.save(quizResult);
     this.logger.log(`Quiz result submitted for User ${user.id}, Quiz ${quiz.id}`);
-    await this.cache.set(`quizResult:${user.id}`, quizResult);
-    return await this.quizResultRepository.save(quizResult);
+    await this.cache.set(`quizResult:${quiz.company.id}:${quiz.id}:${user.id}:${savedQuizResult.id}`, quizResult);
+    return savedQuizResult;
   }
 
   private async calculateCorrectAnswers(userAnswers: string[], questions: Question[]): Promise<number> {

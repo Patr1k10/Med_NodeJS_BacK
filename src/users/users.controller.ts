@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersCreateDto } from './dto/users.create.dto';
 import { UsersUpdateDto } from './dto/users.update.dto';
@@ -6,6 +6,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { PaginatedData } from '../types/interface';
 import { AppGuard } from '../auth/guard/app.guard';
 import { User } from './entities/user.entity';
+import { FileType } from '../types/enums/file.type';
+import { GetUser } from '../decorator/getUser.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -49,5 +51,14 @@ export class UsersController {
     @Param('companyId') companyId: number,
   ): Promise<number> {
     return this.usersService.calculateUserAverageRating(userId, companyId);
+  }
+  @UseGuards(AuthGuard('jwt'))
+  @Get('quiz-results/export/:fileType')
+  async exportUserQuizResults(
+    @GetUser() user: User,
+    @Param('fileType') fileType: FileType,
+    @Res() response: Response,
+  ): Promise<void> {
+    return this.usersService.exportUserQuizResults(user.id, fileType, response);
   }
 }

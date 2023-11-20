@@ -1,4 +1,4 @@
-import { ConflictException, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Logger, NotFoundException } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -7,10 +7,13 @@ import { UsersUpdateDto } from './dto/users.update.dto';
 import { PaginatedData } from '../types/interface';
 import { User } from './entities/user.entity';
 import { paginate } from '../common/pagination';
+import { FileType } from '../types/enums/file.type';
+import { ExportService } from '../redis/export.service';
 
 export class UsersService {
   private readonly logger: Logger = new Logger(UsersService.name);
   constructor(
+    private readonly exportService: ExportService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
@@ -90,5 +93,13 @@ export class UsersService {
       0,
     );
     return totalQuestionsAnswered > 0 ? totalCorrectAnswers / totalQuestionsAnswered : 0;
+  }
+  async exportUserQuizResults(userId: number, fileType: FileType, response: Response): Promise<void> {
+    this.logger.log(userId);
+    if (!userId) {
+      throw new BadRequestException('Invalid user ID');
+    }
+    const exportMethod = fileType === FileType.CSV ? this.exportService.exportToCsv : this.exportService.exportToJson;
+    await exportMethod.call(this.exportService, response, undefined, undefined, userId);
   }
 }

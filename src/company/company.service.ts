@@ -1,19 +1,22 @@
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Response } from 'express';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Company } from './entity/company.entity';
 import { User } from '../users/entities/user.entity';
 import { CompanyCreateDto } from './dto /company.create.dto';
 import { CompanyUpdateDto } from './dto /company.update.dto';
-
 import { paginate } from '../common/pagination';
 import { PaginatedData } from '../types/interface';
 import { Invitation } from '../invitation/entity/invitation.entity';
+import { ExportService } from '../redis/export.service';
+import { FileType } from '../types/enums/file.type';
 
 @Injectable()
 export class CompanyService {
   private readonly logger: Logger = new Logger(CompanyService.name);
   constructor(
+    private readonly exportService: ExportService,
     @InjectRepository(Invitation)
     private readonly invitationRepository: Repository<Invitation>,
     @InjectRepository(Company)
@@ -155,5 +158,33 @@ export class CompanyService {
       throw new NotFoundException('Company not found');
     }
     return company.admins;
+  }
+
+  async exportCompanyUserData(
+    companyId: number,
+    userId: number,
+    fileType: FileType,
+    response: Response,
+  ): Promise<void> {
+    if (!companyId || !userId) {
+      throw new BadRequestException('Invalid company or user ID');
+    }
+    const exportMethod = fileType === FileType.CSV ? this.exportService.exportToCsv : this.exportService.exportToJson;
+    await exportMethod.call(this.exportService, response, companyId, userId);
+  }
+
+  async exportCompanyAllData(companyId: number, fileType: FileType, response: Response): Promise<void> {
+    if (!companyId) {
+      throw new BadRequestException('Invalid company ID');
+    }
+    const exportMethod = fileType === FileType.CSV ? this.exportService.exportToCsv : this.exportService.exportToJson;
+    await exportMethod.call(this.exportService, response, companyId);
+  }
+  async exportCompanyQuizData(quizId: number, fileType: FileType, response: Response): Promise<void> {
+    if (!quizId) {
+      throw new BadRequestException('Invalid quiz ID');
+    }
+    const exportMethod = fileType === FileType.CSV ? this.exportService.exportToCsv : this.exportService.exportToJson;
+    await exportMethod.call(this.exportService, response, undefined, quizId);
   }
 }
