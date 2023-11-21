@@ -1,7 +1,7 @@
 import { Logger, Module } from '@nestjs/common';
 import { HealthController } from './health.controller';
 import { DatabaseModule } from './db/database.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { TransformResponseInterceptor } from './interceptor/response.interceptor';
@@ -13,6 +13,8 @@ import { QuizModule } from './quizzes/quiz.module';
 import { RedisModule } from './redis/redis.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { CronNotificationService } from './notifications/cron.notification.service';
 
 @Module({
   imports: [
@@ -21,6 +23,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     DatabaseModule,
     CompanyModule,
     PassportModule,
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true, // Make the configuration global
     }),
