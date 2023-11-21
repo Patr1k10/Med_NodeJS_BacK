@@ -1,7 +1,6 @@
-// notification.entity.ts
 import { Column, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import { NotificationStatus } from '../../types/enums/notification-status';
+import { NotificationStatus } from '../../types/enums/notification.status';
 
 @Entity()
 export class Notification {

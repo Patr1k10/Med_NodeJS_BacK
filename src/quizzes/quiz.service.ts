@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Company } from '../company/entity/company.entity';
@@ -96,20 +96,20 @@ export class QuizService {
     if (!quiz) {
       throw new NotFoundException('Quiz not found');
     }
-    // const lastQuizResult = await this.quizResultRepository.findOne({
-    //   where: { user: { id: user.id }, quiz: { id: quiz.id } },
-    //   order: { completionTime: 'DESC' },
-    // });
-    //
-    // if (lastQuizResult) {
-    //   const daysSinceLastQuiz = Math.floor(
-    //     (new Date().getTime() - lastQuizResult.completionTime.getTime()) / (1000 * 60 * 60 * 24),
-    //   );
-    //   if (daysSinceLastQuiz < quiz.frequencyInDays) {
-    //     this.logger.error(`User ${user.id} already completed this quiz within the last ${quiz.frequencyInDays} days`);
-    //     throw new ConflictException(`User already completed this quiz within the last ${quiz.frequencyInDays} days`);
-    //   }
-    // }
+    const lastQuizResult = await this.quizResultRepository.findOne({
+      where: { user: { id: user.id }, quiz: { id: quiz.id } },
+      order: { completionTime: 'DESC' },
+    });
+
+    if (lastQuizResult) {
+      const daysSinceLastQuiz = Math.floor(
+        (new Date().getTime() - lastQuizResult.completionTime.getTime()) / (1000 * 60 * 60 * 24),
+      );
+      if (daysSinceLastQuiz < quiz.frequencyInDays) {
+        this.logger.error(`User ${user.id} already completed this quiz within the last ${quiz.frequencyInDays} days`);
+        throw new ConflictException(`User already completed this quiz within the last ${quiz.frequencyInDays} days`);
+      }
+    }
     const totalQuestionsAnswered = userAnswers.length;
     const totalCorrectAnswers = await this.calculateCorrectAnswers(userAnswers, quiz.questions);
     const quizResult = this.quizResultRepository.create({
