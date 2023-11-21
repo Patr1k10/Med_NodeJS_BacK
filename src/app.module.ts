@@ -16,6 +16,8 @@ import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
+    QuizModule,
+    NotificationsModule,
     DatabaseModule,
     CompanyModule,
     PassportModule,
@@ -25,10 +27,8 @@ import { NotificationsModule } from './notifications/notifications.module';
     UsersModule,
     AuthModule,
     InvitationModule,
-    QuizModule,
     RedisModule,
     AnalyticsModule,
-    NotificationsModule,
   ],
   controllers: [HealthController],
   providers: [

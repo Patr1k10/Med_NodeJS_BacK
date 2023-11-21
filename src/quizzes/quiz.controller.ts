@@ -13,10 +13,10 @@ import { QuizResult } from './entities/quiz.result.entity';
 @Controller('quiz')
 export class QuizController {
   constructor(private readonly quizService: QuizService) {}
-  @UseGuards(AuthGuard('jwt'), CompanyGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Post(':companyId')
-  async createQuiz(@Param('companyId') companyId: number, @Body() quizDto: QuizCreateDto): Promise<Quiz> {
-    return this.quizService.createQuiz(companyId, quizDto);
+  async createQuiz(@Param('companyId') companyId: string, @Body() quizDto: QuizCreateDto): Promise<Quiz> {
+    return this.quizService.createQuiz(+companyId, quizDto);
   }
   @UseGuards(AuthGuard('jwt'), CompanyGuard)
   @Patch(':companyId/:quizId')

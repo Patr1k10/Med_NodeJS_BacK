@@ -4,7 +4,7 @@ import { UsersCreateDto } from './dto/users.create.dto';
 import { UsersUpdateDto } from './dto/users.update.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { PaginatedData } from '../types/interface';
-import { AppGuard } from '../auth/guard/app.guard';
+import { UserGuard } from '../auth/guard/app.guard';
 import { User } from './entities/user.entity';
 import { FileType } from '../types/enums/file.type';
 import { GetUser } from '../decorator/getUser.decorator';
@@ -19,13 +19,13 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @UseGuards(AuthGuard('jwt'), AppGuard)
+  @UseGuards(AuthGuard('jwt'), UserGuard)
   async updateUser(@Param('id') id: string, @Body() updateUserDto: UsersUpdateDto): Promise<UsersUpdateDto> {
     return this.usersService.updateUser(+id, updateUserDto);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard('jwt'), AppGuard)
+  @UseGuards(AuthGuard('jwt'), UserGuard)
   async softDeleteUser(@Param('id') id: string): Promise<void> {
     await this.usersService.softDeleteUser(+id);
   }

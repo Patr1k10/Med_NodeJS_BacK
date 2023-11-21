@@ -19,19 +19,20 @@ export class NotificationsService {
   ) {}
 
   async createNotificationForCompany(companyId: number, text: string): Promise<void> {
-    const companyMembers = await this.companyRepository
+    const company = await this.companyRepository
       .createQueryBuilder('company')
       .leftJoinAndSelect('company.members', 'user')
       .where('company.id = :companyId', { companyId })
       .getOne();
-    if (!companyMembers || !companyMembers.members || companyMembers.members.length === 0) {
+    if (!company || !company.members || company.members.length === 0) {
       throw new NotFoundException('Company members not found');
     }
-    const notifications = companyMembers.members.map((member) => ({
+    const notifications = company.members.map((member) => ({
       user: { id: member.id },
       time: new Date(),
       text,
     }));
+    this.logger.log(`Create notification for company ${companyId}`);
     await this.notificationRepository.insert(notifications);
   }
 
@@ -53,6 +54,7 @@ export class NotificationsService {
       throw new NotFoundException('Notification not found');
     }
     notification.status = NotificationStatus.READ;
+    this.logger.log(`Marking notification:${notification.id} as read`);
     return this.notificationRepository.save(notification);
   }
 }

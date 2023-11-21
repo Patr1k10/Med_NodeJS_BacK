@@ -11,6 +11,10 @@ export class QuizCreateDto {
   @IsString()
   description: string;
 
+  @IsNotEmpty()
+  @IsString()
+  notificationsText: string;
+
   @IsNumber()
   @IsOptional()
   frequencyInDays?: number;

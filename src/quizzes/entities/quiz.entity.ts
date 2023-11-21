@@ -22,6 +22,9 @@ export class Quiz {
   @Column()
   description: string;
 
+  @Column({ nullable: true })
+  notificationsText: string;
+
   @Column({ default: 1 })
   frequencyInDays: number;
 

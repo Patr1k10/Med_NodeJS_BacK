@@ -4,7 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from '../decorator/getUser.decorator';
 import { User } from '../users/entities/user.entity';
 import { CompanyGuard } from '../auth/guard/company.guard';
-import { AppGuard } from '../auth/guard/app.guard';
+import { UserGuard } from '../auth/guard/app.guard';
 
 @Controller('analytics')
 export class AnalyticsController {
@@ -13,17 +13,17 @@ export class AnalyticsController {
   async getOverallAverageScore(): Promise<number> {
     return this.analyticsService.getOverallAverageScore();
   }
-  @UseGuards(AuthGuard('jwt'), AppGuard)
+  @UseGuards(AuthGuard('jwt'), UserGuard)
   @Get('user/rating')
   getUserRating(@GetUser() user: User): Promise<number> {
     return this.analyticsService.getUserRating(user.id);
   }
-  @UseGuards(AuthGuard('jwt'), AppGuard)
+  @UseGuards(AuthGuard('jwt'), UserGuard)
   @Get('user/quiz-averages')
   getUserQuizAverages(@GetUser() user: User): Promise<any[]> {
     return this.analyticsService.getUserQuizAverages(user.id);
   }
-  @UseGuards(AuthGuard('jwt'), AppGuard)
+  @UseGuards(AuthGuard('jwt'), UserGuard)
   @Get('user/quiz-history')
   getUserQuizHistory(@GetUser() user: User): Promise<any[]> {
     return this.analyticsService.getUserQuizHistory(user.id);

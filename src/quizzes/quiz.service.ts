@@ -12,11 +12,13 @@ import { QuizResult } from './entities/quiz.result.entity';
 import { User } from '../users/entities/user.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class QuizService {
   private readonly logger: Logger = new Logger(QuizService.name);
   constructor(
+    private readonly notificationsService: NotificationsService,
     @Inject(CACHE_MANAGER) private readonly cache: Cache,
     @InjectRepository(QuizResult)
     private readonly quizResultRepository: Repository<QuizResult>,
@@ -37,6 +39,7 @@ export class QuizService {
       ...quizDto,
       company,
     });
+    await this.notificationsService.createNotificationForCompany(companyId, quiz.notificationsText);
     const createdQuiz = await this.quizRepository.save(quiz);
     this.logger.log(`Quiz created: ${JSON.stringify(createdQuiz)}`);
     return createdQuiz;
