@@ -23,10 +23,12 @@ export class CronNotificationService {
 
   @Cron('0 0 * * *')
   async sendQuizNotifications() {
+    this.logger.log('Cron job started');
     const users = await this.userRepository.find();
     for (const user of users) {
       await this.checkAndSendNotifications(user);
     }
+    this.logger.log('Cron job completed');
   }
 
   private async checkAndSendNotifications(user: User) {
@@ -54,6 +56,7 @@ export class CronNotificationService {
       time: new Date(),
     });
     await this.notificationRepository.save(notification);
+    this.logger.log(`Notification sent to user: ${user.username}`);
   }
 
   private async notificationAlreadySent(user: User, quiz: Quiz): Promise<boolean> {
