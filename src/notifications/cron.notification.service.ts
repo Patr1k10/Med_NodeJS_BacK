@@ -7,12 +7,14 @@ import { QuizResult } from '../quizzes/entities/quiz.result.entity';
 import { Quiz } from '../quizzes/entities/quiz.entity';
 import { Notification } from './entity/notification.entity';
 import { NotificationStatus } from '../types/enums/notification.status';
+import { NotificationsGateway } from './notifications.gateway';
 
 @Injectable()
 export class CronNotificationService {
   private readonly logger = new Logger(CronNotificationService.name);
 
   constructor(
+    private readonly notificationsGateway: NotificationsGateway,
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,
     @InjectRepository(User)
@@ -31,7 +33,7 @@ export class CronNotificationService {
     this.logger.log('Cron job completed');
   }
 
-  private async checkAndSendNotifications(user: User) {
+  private async checkAndSendNotifications(user: User): Promise<void> {
     const quizResults = await this.quizResultRepository.find({
       where: { user: { id: user.id } },
       relations: ['quiz'],
@@ -48,13 +50,14 @@ export class CronNotificationService {
     }
   }
 
-  private async sendNotification(user: User, quiz: Quiz) {
+  private async sendNotification(user: User, quiz: Quiz): Promise<void> {
     const notificationText = `Не забудьте пройти тест "${quiz.title}"!`;
     const notification = this.notificationRepository.create({
       user,
       text: notificationText,
       time: new Date(),
     });
+    await this.notificationsGateway.sendNotificationToUser(user.id, notificationText);
     await this.notificationRepository.save(notification);
     this.logger.log(`Notification sent to user: ${user.username}`);
   }
