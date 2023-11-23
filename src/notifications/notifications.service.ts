@@ -6,12 +6,14 @@ import { Notification } from './entity/notification.entity';
 import { NotificationStatus } from '../types/enums/notification.status';
 import { PaginatedData } from '../types/interface';
 import { paginate } from '../common/pagination';
+import { NotificationsGateway } from './notifications.gateway';
 
 @Injectable()
 export class NotificationsService {
   private readonly logger = new Logger(NotificationsService.name);
 
   constructor(
+    private readonly notificationsGateway: NotificationsGateway,
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,
     @InjectRepository(Company)
@@ -32,6 +34,9 @@ export class NotificationsService {
       time: new Date(),
       text,
     }));
+    notifications.forEach((notification) => {
+      this.notificationsGateway.sendNotificationToUser(notification.user.id, notification.text);
+    });
     this.logger.log(`Create notification for company ${companyId}`);
     await this.notificationRepository.insert(notifications);
   }

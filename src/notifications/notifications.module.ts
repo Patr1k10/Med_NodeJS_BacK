@@ -5,10 +5,12 @@ import { Company } from '../company/entity/company.entity';
 import { Notification } from './entity/notification.entity';
 import { NotificationsController } from './notifications.controller';
 import { User } from '../users/entities/user.entity';
+import { NotificationsGateway } from './notifications.gateway';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Company, Notification, User])],
-  providers: [NotificationsService],
+  imports: [AuthModule, TypeOrmModule.forFeature([Company, Notification, User])],
+  providers: [NotificationsService, NotificationsGateway],
   exports: [NotificationsService],
   controllers: [NotificationsController],
 })
