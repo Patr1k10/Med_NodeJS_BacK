@@ -7,10 +7,13 @@ import { NotificationsController } from './notifications.controller';
 import { User } from '../users/entities/user.entity';
 import { NotificationsGateway } from './notifications.gateway';
 import { AuthModule } from '../auth/auth.module';
+import { Quiz } from '../quizzes/entities/quiz.entity';
+import { QuizResult } from '../quizzes/entities/quiz.result.entity';
+import { CronNotificationService } from './cron.notification.service';
 
 @Module({
-  imports: [AuthModule, TypeOrmModule.forFeature([Company, Notification, User])],
-  providers: [NotificationsService, NotificationsGateway],
+  imports: [AuthModule, TypeOrmModule.forFeature([Company, Notification, User, Quiz, QuizResult])],
+  providers: [NotificationsService, NotificationsGateway, CronNotificationService],
   exports: [NotificationsService],
   controllers: [NotificationsController],
 })
