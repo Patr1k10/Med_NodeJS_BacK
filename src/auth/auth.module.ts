@@ -17,11 +17,12 @@ dotenv.config();
     PassportModule.register({ defaultStrategy: 'jwt' }),
     TypeOrmModule.forFeature([User, Auth]),
     JwtModule.register({
-      secret: process.env.SECRET_ACCSESS,
+      secret: process.env.SECRET_ACCESS,
       signOptions: { expiresIn: '12h' },
     }),
   ],
   controllers: [AuthController],
   providers: [AuthService, Auth0Strategy, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}

@@ -7,9 +7,11 @@ import { QuizService } from './quiz.service';
 import { QuizController } from './quiz.controller';
 import { Quiz } from './entities/quiz.entity';
 import { QuizResult } from './entities/quiz.result.entity';
+import { Notification } from '../notifications/entity/notification.entity';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Company, Invitation, Quiz, QuizResult])],
+  imports: [TypeOrmModule.forFeature([User, Company, Invitation, Quiz, QuizResult, Notification]), NotificationsModule],
   controllers: [QuizController],
   providers: [QuizService],
 })

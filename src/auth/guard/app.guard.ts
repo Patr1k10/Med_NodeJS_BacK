@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 
 @Injectable()
-export class AppGuard implements CanActivate {
+export class UserGuard implements CanActivate {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,

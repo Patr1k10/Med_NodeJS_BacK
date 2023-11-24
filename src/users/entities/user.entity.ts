@@ -11,6 +11,7 @@ import {
 import { UserRole } from '../../types/enums/user.role';
 import { Company } from '../../company/entity/company.entity';
 import { QuizResult } from '../../quizzes/entities/quiz.result.entity';
+import { Notification } from '../../notifications/entity/notification.entity';
 
 @Entity()
 export class User {
@@ -52,6 +53,9 @@ export class User {
 
   @OneToMany(() => QuizResult, (quizResult) => quizResult.user, { cascade: true })
   quizResults: QuizResult[];
+
+  @OneToMany(() => Notification, (notification) => notification.user, { cascade: true })
+  notifications: Notification[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;

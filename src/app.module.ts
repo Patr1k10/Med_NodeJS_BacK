@@ -12,9 +12,12 @@ import { InvitationModule } from './invitation/invitation.module';
 import { QuizModule } from './quizzes/quiz.module';
 import { RedisModule } from './redis/redis.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
+    QuizModule,
+    NotificationsModule,
     DatabaseModule,
     CompanyModule,
     PassportModule,
@@ -24,7 +27,6 @@ import { AnalyticsModule } from './analytics/analytics.module';
     UsersModule,
     AuthModule,
     InvitationModule,
-    QuizModule,
     RedisModule,
     AnalyticsModule,
   ],
