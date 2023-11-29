@@ -14,13 +14,13 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  async createUser(@Body() userDto: UsersCreateDto): Promise<UsersCreateDto> {
+  async createUser(@Body() userDto: UsersCreateDto): Promise<User> {
     return this.usersService.createUser(userDto);
   }
 
   @Patch(':id')
   @UseGuards(AuthGuard('jwt'), UserGuard)
-  async updateUser(@Param('id') id: string, @Body() updateUserDto: UsersUpdateDto): Promise<UsersUpdateDto> {
+  async updateUser(@Param('id') id: string, @Body() updateUserDto: UsersUpdateDto): Promise<User> {
     return this.usersService.updateUser(+id, updateUserDto);
   }
 
