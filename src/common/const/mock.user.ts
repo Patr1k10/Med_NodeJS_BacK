@@ -1,5 +1,4 @@
 import { UserRole } from '../../types/enums/user.role';
-import { User } from '../../users/entities/user.entity';
 
 export const mockUser = {
   id: 1,
@@ -13,8 +12,8 @@ export const mockUser = {
   invitedCompanies: [],
   requestedCompanies: [],
   quizResults: [
-    { totalQuestionsAnswered: 10, totalCorrectAnswers: 8, quiz: { company: { id: 2 } } },
-    { totalQuestionsAnswered: 5, totalCorrectAnswers: 4, quiz: { company: { id: 3 } } },
+    { totalQuestionsAnswered: 10, totalCorrectAnswers: 8, quiz: { id: 1, frequencyInDays: 7, company: { id: 2 } } },
+    { totalQuestionsAnswered: 5, totalCorrectAnswers: 4, quiz: { id: 1, frequencyInDays: 7, company: { id: 3 } } },
   ],
   notifications: [],
   created_at: new Date(),
