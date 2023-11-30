@@ -25,7 +25,8 @@ export class CompanyService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async createCompany(user: User, companyDto: CompanyCreateDto): Promise<Company> {
+  async createCompany(userId: number, companyDto: CompanyCreateDto): Promise<Company> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
     const { name, description } = companyDto;
     const company = this.companyRepository.create({
       name,

@@ -1,4 +1,5 @@
 import { UserRole } from '../../types/enums/user.role';
+import { User } from '../../users/entities/user.entity';
 
 export const mockUser = {
   id: 1,

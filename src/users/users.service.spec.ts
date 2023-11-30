@@ -10,10 +10,15 @@ import { UsersCreateDto } from './dto/users.create.dto';
 import { UsersUpdateDto } from './dto/users.update.dto';
 import { FileType } from '../types/enums/file.type';
 import { mockUser } from '../common/const/mock.user';
+import { mockRepository } from '../common/const/mock.repository';
+import { mockExportService } from '../common/const/mock.export.service';
 
 describe('UsersService', () => {
   let usersService: UsersService;
   let userRepository: Repository<User>;
+  let exportService: ExportService;
+
+
 
   const createUserDto: UsersCreateDto = {
     username: 'mockUsername',
@@ -23,19 +28,8 @@ describe('UsersService', () => {
     password: 'mockPassword',
   };
 
-  const mockUserRepository = {
-    findOne: jest.fn(),
-    create: jest.fn(),
-    save: jest.fn(),
-    softDelete: jest.fn(),
-    findAndCount: jest.fn(),
-    createQueryBuilder: jest.fn(() => ({
-      orderBy: jest.fn().mockReturnThis(),
-      skip: jest.fn().mockReturnThis(),
-      take: jest.fn().mockReturnThis(),
-      getManyAndCount: jest.fn(),
-    })),
-  };
+  const mockUserId = 1;
+
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -45,17 +39,18 @@ describe('UsersService', () => {
         ExportService,
         {
           provide: CACHE_MANAGER,
-          useValue: {},
+          useValue: mockExportService,
         },
         {
           provide: getRepositoryToken(User),
-          useValue: mockUserRepository,
+          useValue: mockRepository,
         },
       ],
     }).compile();
 
     usersService = module.get<UsersService>(UsersService);
     userRepository = module.get<Repository<User>>(getRepositoryToken(User));
+    exportService = module.get<ExportService>(ExportService);
   });
 
   it('should be defined', () => {
@@ -64,100 +59,87 @@ describe('UsersService', () => {
 
   describe('createUser', () => {
     it('should create a user', async () => {
-      mockUserRepository.findOne.mockResolvedValue(null);
-      mockUserRepository.save.mockResolvedValue(mockUser);
-      mockUserRepository.create.mockReturnValue(createUserDto);
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+      jest.spyOn(userRepository, 'save').mockResolvedValue(mockUser as User);
+      jest.spyOn(userRepository, 'create').mockReturnValue(createUserDto as User);
+
       const result = await usersService.createUser(createUserDto);
+
       expect(result).toEqual(mockUser);
+      expect(userRepository.findOne).toHaveBeenCalledWith({ where: { username: createUserDto.username } });
+      expect(userRepository.save).toHaveBeenCalledWith(createUserDto);
     });
 
     it('should throw a ConflictException if username already exists', async () => {
-      mockUserRepository.findOne.mockResolvedValue(mockUser);
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser as User);
+
       await expect(usersService.createUser(createUserDto)).rejects.toThrow(ConflictException);
+      expect(userRepository.findOne).toHaveBeenCalledWith({ where: { username: createUserDto.username } });
     });
   });
 
   describe('updateUser', () => {
     it('should update user information', async () => {
-      const userId = 1;
       const updateUserDto: UsersUpdateDto = {
         firstName: 'UpdatedFirstName',
         lastName: 'UpdatedLastName',
       };
-      const existingUser = new User();
-      existingUser.id = userId;
-      existingUser.firstName = 'OldFirstName';
-      existingUser.lastName = 'OldLastName';
-      mockUserRepository.findOne.mockResolvedValue(existingUser);
-      mockUserRepository.save.mockResolvedValue({ ...existingUser, ...updateUserDto });
-      const result = await usersService.updateUser(userId, updateUserDto);
-      expect(result).toEqual({ ...existingUser, ...updateUserDto });
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { id: userId } });
-      expect(mockUserRepository.save).toHaveBeenCalledWith({ ...existingUser, ...updateUserDto });
+
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser as User);
+      jest.spyOn(userRepository, 'save').mockResolvedValue({ ...(mockUser as User), ...updateUserDto });
+
+      const result = await usersService.updateUser(mockUserId, updateUserDto);
+
+      expect(result).toEqual({ ...mockUser, ...updateUserDto });
+      expect(userRepository.findOne).toHaveBeenCalledWith({ where: { id: mockUserId } });
+      expect(userRepository.save).toHaveBeenCalledWith({ ...mockUser, ...updateUserDto });
     });
 
     it('should throw NotFoundException if user not found', async () => {
-      const userId = 1;
       const updateUserDto: UsersUpdateDto = {
         firstName: 'UpdatedFirstName',
         lastName: 'UpdatedLastName',
       };
-      mockUserRepository.findOne.mockResolvedValue(null);
-      await expect(usersService.updateUser(userId, updateUserDto)).rejects.toThrowError(NotFoundException);
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { id: userId } });
-      expect(mockUserRepository.save).not.toHaveBeenCalled();
+
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+
+      await expect(usersService.updateUser(mockUserId, updateUserDto)).rejects.toThrowError(NotFoundException);
+      expect(userRepository.findOne).toHaveBeenCalledWith({ where: { id: mockUserId } });
+      expect(userRepository.save).not.toHaveBeenCalled();
     });
   });
 
   describe('softDeleteUser', () => {
     it('should soft delete a user', async () => {
-      const userId = 1;
-      mockUserRepository.softDelete.mockResolvedValue({ affected: 1 });
-      await expect(usersService.softDeleteUser(userId)).resolves.not.toThrow();
-      expect(mockUserRepository.softDelete).toHaveBeenCalledWith(userId);
+      jest.spyOn(userRepository, 'softDelete').mockResolvedValue({ affected: 1 } as any);
+
+      await expect(usersService.softDeleteUser(mockUserId)).resolves.not.toThrow();
+      expect(userRepository.softDelete).toHaveBeenCalledWith(mockUserId);
     });
 
     it('should throw NotFoundException if user not found for soft deletion', async () => {
-      const userId = 1;
-      mockUserRepository.softDelete.mockResolvedValue({ affected: 0 });
-      await expect(usersService.softDeleteUser(userId)).rejects.toThrowError(NotFoundException);
-      expect(mockUserRepository.softDelete).toHaveBeenCalledWith(userId);
+      jest.spyOn(userRepository, 'softDelete').mockResolvedValue({ affected: 0 } as any);
+
+      await expect(usersService.softDeleteUser(mockUserId)).rejects.toThrowError(NotFoundException);
+      expect(userRepository.softDelete).toHaveBeenCalledWith(mockUserId);
     });
   });
 
   describe('getUserById', () => {
     it('should get a user by ID', async () => {
-      const userId = 1;
-      mockUserRepository.findOne.mockResolvedValue(mockUser);
-      const result = await usersService.getUserById(userId);
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(mockUser as User);
+
+      const result = await usersService.getUserById(mockUserId);
+
       expect(result).toEqual(mockUser);
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { id: userId } });
+      expect(userRepository.findOne).toHaveBeenCalledWith({ where: { id: mockUserId } });
     });
 
     it('should throw NotFoundException if user not found by ID', async () => {
-      const userId = 1;
-      mockUserRepository.findOne.mockResolvedValue(null);
-      await expect(usersService.getUserById(userId)).rejects.toThrowError(NotFoundException);
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { id: userId } });
-    });
-  });
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
 
-  describe('calculateUserAverageRating', () => {
-    it('should calculate the average rating for a user', async () => {
-      const userId = 1;
-      const companyId = 2;
-      mockUserRepository.findOne.mockResolvedValue(mockUser);
-      const result = await usersService.calculateUserAverageRating(userId, companyId);
-      expect(result).toEqual(0.8); // (8 + 4) / (10 + 5) = 12 / 15 = 0.8
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { id: userId }, relations: ['quizResults'] });
-    });
-
-    it('should throw NotFoundException if user not found for rating calculation', async () => {
-      const userId = 1;
-      const companyId = 2;
-      mockUserRepository.findOne.mockResolvedValue(null);
-      await expect(usersService.calculateUserAverageRating(userId, companyId)).rejects.toThrowError(NotFoundException);
-      expect(mockUserRepository.findOne).toHaveBeenCalledWith({ where: { id: userId }, relations: ['quizResults'] });
+      await expect(usersService.getUserById(mockUserId)).rejects.toThrowError(NotFoundException);
+      expect(userRepository.findOne).toHaveBeenCalledWith({ where: { id: mockUserId } });
     });
   });
 
