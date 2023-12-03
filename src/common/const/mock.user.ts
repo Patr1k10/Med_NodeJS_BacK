@@ -8,7 +8,7 @@ export const mockUser = {
   lastName: 'User',
   password: 'mockPassword',
   role: UserRole.USER,
-  companies: [],
+  companies: [{ id: 1 }],
   invitedCompanies: [],
   requestedCompanies: [],
   quizResults: [
@@ -19,4 +19,22 @@ export const mockUser = {
   created_at: new Date(),
   updated_at: new Date(),
   deleted_at: null,
+};
+
+export const mockUser1 = {
+  id: 2,
+  username: 'mockUsername',
+  email: 'mock@example.com',
+  firstName: 'Mock',
+  lastName: 'User',
+  password: 'mockPassword',
+  role: UserRole.USER,
+  companies: [],
+  invitedCompanies: [{}],
+  requestedCompanies: [{}],
+  quizResults: [
+    { totalQuestionsAnswered: 10, totalCorrectAnswers: 8, quiz: { id: 1, frequencyInDays: 7, company: { id: 2 } } },
+    { totalQuestionsAnswered: 5, totalCorrectAnswers: 4, quiz: { id: 1, frequencyInDays: 7, company: { id: 3 } } },
+  ],
+  notifications: [],
 };
