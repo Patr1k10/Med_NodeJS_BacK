@@ -9,7 +9,16 @@ jobs:
     name: Backend Deploy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Install Docker
+        run: |
+          sudo yum update -y
+          sudo yum install -y docker
+          sudo systemctl start docker
+          sudo systemctl enable docker
+
+      - name: Clone repository
+        uses: actions/checkout@v3
+
       - name: Run deploy on remote
         uses: appleboy/ssh-action@master
         with:
