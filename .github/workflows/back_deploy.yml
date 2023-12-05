@@ -22,7 +22,7 @@ jobs:
           command_timeout: "30m"
           script: |
             cd app
-            git pull git@github.com:Patr1k10/Med_NodeJS_BacK.git main
+            git pull https://github.com/Patr1k10/Med_NodeJS_BacK.git main
             echo "API_PORT=${{ secrets.API_PORT }}" > .env
             echo "API_HOST=${{ secrets.API_HOST }}" >> .env
             echo "FRONTEND_ORIGIN=${{ secrets.FRONTEND_ORIGIN }}" >> .env
