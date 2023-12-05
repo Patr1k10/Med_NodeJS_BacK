@@ -1,0 +1,55 @@
+name: Back Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Backend Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Run deploy on remote
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_HOST }}
+          username: ${{ secrets.AWS_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: "22"
+          command_timeout: "30m"
+          script: |
+            cd app
+            git pull git@github.com:Patr1k10/Med_NodeJS_BacK.git main
+            echo "API_PORT=${{ secrets.API_PORT }}" > .env
+            echo "API_HOST=${{ secrets.API_HOST }}" >> .env
+            echo "FRONTEND_ORIGIN=${{ secrets.FRONTEND_ORIGIN }}" >> .env
+            echo "CRORS_METHODS=${{ secrets.CRORS_METHODS }}" >> .env
+            echo "PG_HOST=${{ secrets.PG_HOST }}" >> .env
+            echo "PG_PORT=${{ secrets.PG_PORT }}" >> .env
+            echo "PG_USER=${{ secrets.PG_USER }}" >> .env
+            echo "PG_PASSWORD=${{ secrets.PG_PASSWORD }}" >> .env
+            echo "PG_DB=${{ secrets.PG_DB }}" >> .env
+            echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
+            echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
+            echo "REDIS_URL=${{ secrets.REDIS_URL }}" >> .env
+            echo "REDIS_TTL=${{ secrets.REDIS_TTL }}" >> .env
+            echo "REDIS_PASS=${{ secrets.REDIS_PASS }}" >> .env
+            echo "AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}" >> .env
+            echo "AUTH0_URL=${{ secrets.AUTH0_URL }}" >> .env
+            echo "AUTH0_TOKENSIGNIN=${{ secrets.AUTH0_TOKENSIGNIN }}" >> .env
+            echo "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}" >> .env
+            echo "AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}" >> .env
+            echo "AUTHO_CALLBACK=${{ secrets.AUTHO_CALLBACK }}" >> .env
+            echo "AUTH0_SECRET=${{ secrets.AUTH0_SECRET }}" >> .env
+            echo "SECRET_ACCESS=${{ secrets.SECRET_ACCESS }}" >> .env
+            echo "SECRET_REFRESH=${{ secrets.SECRET_REFRESH }}" >> .env
+            echo "SECRET_ACTION=${{ secrets.SECRET_ACTION }}" >> .env
+            echo "CLIENT_ORIGIN_URL=${{ secrets.CLIENT_ORIGIN_URL }}" >> .env
+            docker stop your-container-name || true
+            docker rm your-container-name || true
+            docker build -t your-image-name .
+            docker run -it -d --name your-container-name -p 3000:3000 your-image-name /bin/bash
+            
