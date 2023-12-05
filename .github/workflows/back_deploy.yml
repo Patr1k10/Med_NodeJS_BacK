@@ -9,13 +9,6 @@ jobs:
     name: Backend Deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Install Docker
-        run: |
-          sudo yum update -y
-          sudo yum install -y docker
-          sudo systemctl start docker
-          sudo systemctl enable docker
-
       - name: Clone repository
         uses: actions/checkout@v3
 
