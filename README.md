@@ -94,7 +94,7 @@ To create a migration, use the following command:
 npx typeorm migration:create src/migrations/your-migration-name   
 ```
 
-This creates a new migration file in the migrations folder. The file contains up function (instructions for updating the database) and down function (instructions for rolling back changes).
+ This creates a new migration file in the migrations folder. The file contains up function (instructions for updating the database) and down function (instructions for rolling back changes).
 
 ### Editing a Migration:
 
