@@ -2,7 +2,8 @@
 /dist
 /node_modules
 .env
-docker-compose.yml
+med_back_ssh_key.pem
+
 # Logs
 logs
 *.log
