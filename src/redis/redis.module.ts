@@ -1,25 +1,26 @@
 import { Module } from '@nestjs/common';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
-import { redisStore } from 'cache-manager-redis-yet';
 import { ExportService } from './export.service';
+import { redisStore } from 'cache-manager-redis-yet';
 
 @Module({
   imports: [
     CacheModule.registerAsync({
       useFactory: async (configService: ConfigService) => {
-        const redisUrl = configService.get<string>('REDIS_URL');
+        const redisHost = configService.get<string>('REDIS_HOST');
+        const redisPort = configService.get<number>('REDIS_PORT');
         const redisTtl = configService.get<number>('REDIS_TTL');
 
-        // Выводим значения переменных окружения в консоль
-        console.log('REDIS_URL:', redisUrl);
+        console.log('REDIS_HOST:', redisHost);
+        console.log('REDIS_PORT:', redisPort);
         console.log('REDIS_TTL:', redisTtl);
 
         return {
-          store: await redisStore({
-            url: redisUrl,
-            ttl: redisTtl,
-          }),
+          store: redisStore,
+          host: redisHost,
+          port: redisPort,
+          ttl: redisTtl,
         };
       },
       isGlobal: true,
