@@ -7,12 +7,21 @@ import { ExportService } from './export.service';
 @Module({
   imports: [
     CacheModule.registerAsync({
-      useFactory: async (configService: ConfigService) => ({
-        store: await redisStore({
-          url: configService.get<string>('REDIS_URL'),
-          ttl: configService.get<number>('REDIS_TTL'),
-        }),
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const redisUrl = configService.get<string>('REDIS_URL');
+        const redisTtl = configService.get<number>('REDIS_TTL');
+
+        // Выводим значения переменных окружения в консоль
+        console.log('REDIS_URL:', redisUrl);
+        console.log('REDIS_TTL:', redisTtl);
+
+        return {
+          store: await redisStore({
+            url: redisUrl,
+            ttl: redisTtl,
+          }),
+        };
+      },
       isGlobal: true,
       inject: [ConfigService],
     }),
