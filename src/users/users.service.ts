@@ -18,7 +18,7 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async createUser(userDto: UsersCreateDto): Promise<UsersCreateDto> {
+  async createUser(userDto: UsersCreateDto): Promise<User> {
     const existingUser = await this.userRepository.findOne({
       where: {
         username: userDto.username,
@@ -33,7 +33,7 @@ export class UsersService {
     return await this.userRepository.save(user);
   }
 
-  async updateUser(userId: number, updateUserDto: UsersUpdateDto): Promise<UsersUpdateDto> {
+  async updateUser(userId: number, updateUserDto: UsersUpdateDto): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       this.logger.warn(`User not found with ID: ${userId}`);
@@ -54,7 +54,7 @@ export class UsersService {
   async getUserById(id: number): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id } });
     if (!user) {
-      throw new Error('User is not found');
+      throw new NotFoundException('User is not found');
     }
     return user;
   }

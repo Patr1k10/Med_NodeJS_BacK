@@ -19,7 +19,7 @@ export class CompanyController {
 
   @Post()
   createCompany(@GetUser() user: User, @Body() companyDto: CompanyCreateDto): Promise<Company> {
-    return this.companyService.createCompany(user, companyDto);
+    return this.companyService.createCompany(user.id, companyDto);
   }
 
   @Patch(':id')
