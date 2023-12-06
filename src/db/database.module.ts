@@ -16,6 +16,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         database: configService.get<string>('PG_DB'),
         entities: [`${__dirname}/../**/*.entity{.ts,.js}`],
         synchronize: true,
+        ssl: true,
+        extra: {
+          ssl: {
+            rejectUnauthorized: false,
+          },
+        },
       }),
     }),
   ],
