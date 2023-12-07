@@ -51,5 +51,5 @@ jobs:
             docker stop your-container-name || true
             docker rm your-container-name || true
             docker build -t your-image-name .
-            docker run -it -d --name your-container-name -p 3000:3000 your-image-name /bin/bash
+            docker run -it -d --name your-container-name -p 3000:3000 your-image-name
             
