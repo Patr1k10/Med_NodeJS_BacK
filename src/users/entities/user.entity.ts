@@ -30,7 +30,7 @@ export class User {
   @Column({ nullable: true })
   lastName: string | null;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, select: false })
   password: string | null;
 
   @Column({
